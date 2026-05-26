@@ -83,7 +83,7 @@ button{cursor:pointer}
 .save-lbl{font-size:11px;color:var(--text3);white-space:nowrap}
 .content{padding:20px 28px 40px}
 /* ── summary cards ── */
-.sum-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.sum-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;box-shadow:var(--sh)}
 .sc-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
 .sc-val{font-size:22px;font-weight:600;letter-spacing:-.5px;font-family:var(--mono)}
@@ -260,9 +260,13 @@ button{cursor:pointer}
   </nav>
   <div class="sb-bot">
     <div class="sb-bal-card">
-      <div class="sbc-lbl">Current Balance</div>
+      <div class="sbc-lbl">Actual Balance</div>
       <div class="sbc-val" id="sb-bal">—</div>
       <div class="sbc-sub">TD •••• 4821</div>
+      <div style="height:1px;background:rgba(255,255,255,.15);margin:10px 0"></div>
+      <div class="sbc-lbl">Projected Closing</div>
+      <div class="sbc-val" id="sb-proj" style="font-size:16px">—</div>
+      <div class="sbc-sub" id="sb-proj-label">May – Dec 2026</div>
     </div>
   </div>
 </aside>
@@ -624,7 +628,11 @@ function runBals(fY,fM,tY,tM){
   return r;
 }
 
-function curBal(){return Math.round((openingBalance+transactions.reduce((a,t)=>t.type==='income'?a+t.amt:a-t.amt,0))*100)/100}
+function curBal(){
+  // Only count manual transactions — recurring ones are projections, not actual movements
+  const manualOnly=transactions.filter(t=>!t.rec);
+  return Math.round((openingBalance+manualOnly.reduce((a,t)=>t.type==='income'?a+t.amt:a-t.amt,0))*100)/100;
+}
 
 function fmt(n,sign=false){
   const s='$'+Math.abs(n).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -671,20 +679,52 @@ function renderSidebar(){
   const b=curBal();
   document.getElementById('sb-bal').textContent=fmt(b);
   document.getElementById('sb-bal').style.color=b>=0?'#fff':'#F09595';
+  const pBals=runBals(projFY,projFM,projTY,projTM);
+  const proj=pBals[pBals.length-1].bal;
+  const projEl=document.getElementById('sb-proj');
+  if(projEl){projEl.textContent=fmt(proj);projEl.style.color=proj>=0?'#fff':'#F09595';}
+  const lblEl=document.getElementById('sb-proj-label');
+  if(lblEl)lblEl.textContent=`${MS[projFM]} ${projFY} – ${MS[projTM]} ${projTY}`;
 }
 
 function renderSummary(){
   document.getElementById('mnav-lbl').textContent=MN[vM]+' '+vY;
   const inc=mInc(vY,vM),exp=mExp(vY,vM),net=inc-exp,bal=curBal();
-  // use global period
   let pBals=runBals(projFY,projFM,projTY,projTM);
   const proj=pBals[pBals.length-1].bal;
   const projLabel=`${MS[projFM]} ${projFY} – ${MS[projTM]} ${projTY}`;
+  const diff=proj-bal; // projected change from now
   document.getElementById('sum-row').innerHTML=`
-    <div class="sc"><div class="sc-lbl">Current balance</div><div class="sc-val" style="color:${bal>=0?'var(--blue)':'var(--red)'}">${fmt(bal)}</div><div class="sc-sub">TD •••• 4821</div></div>
-    <div class="sc"><div class="sc-lbl">${MS[vM]} income</div><div class="sc-val" style="color:var(--blue)">${fmt(inc)}</div><div class="sc-sub">${payDates(vY,vM).length} pay periods</div></div>
-    <div class="sc"><div class="sc-lbl">${MS[vM]} expenses</div><div class="sc-val" style="color:var(--red)">${fmt(exp)}</div><div class="sc-sub">${vY===ICBC_DATE.getFullYear()&&vM===ICBC_DATE.getMonth()?'incl. ICBC':'recurring'}</div></div>
-    <div class="sc"><div class="sc-lbl">Projected closing balance</div><div class="sc-val" style="color:${proj>=0?'var(--blue)':'var(--red)'}">${fmt(proj)}</div><div class="sc-sub">${projLabel}</div></div>`;
+    <div class="sc" style="border-left:3px solid var(--green-mid)">
+      <div class="sc-lbl">Actual balance</div>
+      <div class="sc-val" style="color:${bal>=0?'var(--blue)':'var(--red)'}">${fmt(bal)}</div>
+      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-building-bank" style="font-size:12px"></i>TD •••• 4821 · manual txns only</div>
+    </div>
+    <div class="sc" style="border-left:3px solid var(--purple)">
+      <div class="sc-lbl">Projected closing</div>
+      <div class="sc-val" style="color:${proj>=0?'var(--blue)':'var(--red)'}">${fmt(proj)}</div>
+      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-calculator" style="font-size:12px"></i>${projLabel}</div>
+    </div>
+    <div class="sc" style="border-left:3px solid ${diff>=0?'var(--green-mid)':'var(--coral)'}">
+      <div class="sc-lbl">Projected change</div>
+      <div class="sc-val" style="color:${diff>=0?'var(--green)':'var(--red)'}">${fmt(diff,true)}</div>
+      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-trending-${diff>=0?'up':'down'}" style="font-size:12px"></i>vs current balance</div>
+    </div>
+    <div class="sc" style="border-left:3px solid var(--blue-mid)">
+      <div class="sc-lbl">${MS[vM]} income</div>
+      <div class="sc-val" style="color:var(--blue)">${fmt(inc)}</div>
+      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-cash" style="font-size:12px"></i>${payDates(vY,vM).length} pay periods</div>
+    </div>
+    <div class="sc" style="border-left:3px solid var(--coral)">
+      <div class="sc-lbl">${MS[vM]} expenses</div>
+      <div class="sc-val" style="color:var(--red)">${fmt(exp)}</div>
+      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-receipt" style="font-size:12px"></i>${vY===ICBC_DATE.getFullYear()&&vM===ICBC_DATE.getMonth()?'incl. ICBC':'all recurring'}</div>
+    </div>
+    <div class="sc" style="border-left:3px solid ${net>=0?'var(--olive)':'var(--red)'}">
+      <div class="sc-lbl">${MS[vM]} net</div>
+      <div class="sc-val" style="color:${net>=0?'var(--green)':'var(--red)'}">${fmt(net,true)}</div>
+      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-math-function" style="font-size:12px"></i>income − expenses</div>
+    </div>`;
 }
 
 // ── CALENDAR ──────────────────────────────────────────────────────────────
@@ -734,7 +774,8 @@ function renderBalance(){
   if(fY>tY||(fY===tY&&fM>tM)){alert('Start must be before end');return;}
   // save to global so all other tabs use same period
   projFY=fY;projFM=fM;projTY=tY;projTM=tM;
-  // re-render summary cards so projected balance label updates immediately
+  // re-render sidebar, summary and saving so all projected values update
+  renderSidebar();
   renderSummary();
   if(document.getElementById('sec-saving').classList.contains('active'))renderSaving();
   let y=fY,m=fM;
