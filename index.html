@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Finance — Nic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#F7F6F2;--surface:#FFF;--surface2:#F0EEE8;--border:#E2DDD6;--border2:#CCC8BF;
+  --text:#1A1916;--text2:#6B6860;--text3:#9C9A95;
+  --blue:#185FA5;--blue-light:#E6F1FB;--blue-mid:#378ADD;
+  --red:#A32D2D;--red-light:#FCE4D6;
+  --green:#1B5E20;--green-light:#E8F5E9;--green-mid:#1D9E75;
+  --amber:#854F0B;--amber-light:#FAEEDA;
+  --purple:#7F77DD;--teal:#0F6E56;--teal-light:#E1F5EE;
+  --olive:#639922;--olive-light:#EAF3DE;
+  --coral:#D85A30;--pink:#D4537E;--gray-c:#5F5E5A;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:10px;--rl:14px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shm:0 4px 12px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+button,input,select,textarea{font-family:var(--font)}
+button{cursor:pointer}
+.layout{display:flex;min-height:100vh}
+/* ── sidebar ── */
+.sb{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.main{margin-left:220px;flex:1}
+.sb-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sb-logo-name{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.sb-logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.sb-bank{margin:12px;background:var(--green-light);border:1px solid #A5D6B0;border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:8px}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--green-mid);flex-shrink:0}
+.sb-bank-name{font-size:12px;font-weight:500;color:var(--teal)}
+.sb-bank-num{font-size:11px;color:#4A7C59}
+.sb-nav{padding:8px;flex:1}
+.sni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);font-size:13px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:all .15s}
+.sni:hover{background:var(--surface2);color:var(--text)}
+.sni.active{background:var(--text);color:#fff;font-weight:500}
+.sni i{font-size:16px;flex-shrink:0}
+.sb-bot{padding:12px}
+.sb-bal-card{background:var(--text);color:#fff;border-radius:var(--rl);padding:14px}
+.sbc-lbl{font-size:11px;opacity:.6;margin-bottom:4px}
+.sbc-val{font-size:22px;font-weight:600;letter-spacing:-.5px;font-family:var(--mono)}
+.sbc-sub{font-size:11px;opacity:.5;margin-top:3px}
+/* ── topbar ── */
+.topbar{padding:20px 28px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.tb-title{font-size:20px;font-weight:600;letter-spacing:-.3px}
+.tb-date{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.mnav{display:flex;align-items:center;gap:8px}
+.mnav button{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--text2);display:flex;align-items:center;transition:all .15s}
+.mnav button:hover{border-color:var(--border2);color:var(--text)}
+.mnav-lbl{font-size:14px;font-weight:500;min-width:130px;text-align:center}
+.content{padding:20px 28px 40px}
+/* ── summary cards ── */
+.sum-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;box-shadow:var(--sh)}
+.sc-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.sc-val{font-size:22px;font-weight:600;letter-spacing:-.5px;font-family:var(--mono)}
+.sc-sub{font-size:11px;color:var(--text3);margin-top:4px}
+/* ── sections ── */
+.sec{display:none}.sec.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;box-shadow:var(--sh)}
+.card-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title i{font-size:16px;color:var(--text3)}
+/* ── calendar ── */
+.cal-legend{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cdow{text-align:center;font-size:11px;color:var(--text3);padding:4px 0 8px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.cc{min-height:72px;border-radius:8px;border:1px solid var(--border);background:var(--surface);padding:6px 7px;cursor:pointer;transition:box-shadow .15s}
+.cc:hover:not(.other){box-shadow:var(--shm)}
+.cc.other{opacity:.3}
+.cc.today{border-color:var(--blue-mid);border-width:1.5px}
+.cc.pay{background:#EBF4FD;border-color:#9EC8EF}
+.cc.expense{background:#FEF2EE;border-color:#F0B49A}
+.cc.both{background:linear-gradient(135deg,#EBF4FD 50%,#FEF2EE 50%);border-color:#9EC8EF}
+.dn{font-size:11px;font-weight:600;display:block;margin-bottom:3px}
+.bdg{display:inline-block;font-size:8px;border-radius:3px;padding:1px 3px;color:#fff;margin:1px 1px 0 0;font-weight:500;line-height:1.5}
+.b-pay{background:#378ADD}.b-rent{background:#BA7517}.b-gym{background:#639922}
+.b-wifi{background:#7F77DD}.b-gas{background:#888780}.b-wash{background:#1D9E75}
+.b-phone{background:#D4537E}.b-icbc{background:#D85A30}.b-manual{background:#7F77DD}
+/* ── balance ── */
+.period-picker{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.pp-lbl{font-size:12px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.pp-input{padding:6px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:var(--mono)}
+.pp-input:focus{outline:none;border-color:var(--blue-mid)}
+.bal-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:160px;padding:0 2px}
+.bw{flex:1;display:flex;flex-direction:column;align-items:center}
+.bar{width:100%;border-radius:5px 5px 0 0;transition:height .4s;min-height:4px}
+.bar.pos{background:var(--blue-mid)}.bar.neg{background:var(--coral)}
+.bar-mo{font-size:9px;color:var(--text3);margin-top:4px;text-align:center}
+.bar-val{font-size:9px;font-weight:500;margin-bottom:3px;font-family:var(--mono);text-align:center}
+/* ── transactions ── */
+.tx-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.txfs{display:flex;gap:6px}
+.tf{padding:5px 14px;font-size:12px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);transition:all .15s}
+.tf:hover{border-color:var(--border2);color:var(--text)}
+.tf.active{background:var(--text);color:#fff;border-color:var(--text)}
+.tx-mo-pill{font-size:13px;font-weight:500;color:var(--blue);background:var(--blue-light);padding:5px 14px;border-radius:20px;font-family:var(--mono)}
+.tx-list{display:flex;flex-direction:column;gap:6px;max-height:520px;overflow-y:auto;padding-right:2px}
+.tx-list::-webkit-scrollbar{width:4px}.tx-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.txi{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);transition:border-color .15s}
+.txi:hover{border-color:var(--border2)}
+.tx-ico{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.tx-meta{flex:1;min-width:0}
+.tx-name{font-size:13px;font-weight:500}
+.tx-pills{display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap}
+.tx-dp{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.tx-cp{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--surface2);color:var(--text2)}
+.tx-rp{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--olive-light);color:var(--olive)}
+.tx-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tx-amtw{text-align:right}
+.tx-amt{font-size:14px;font-weight:600;font-family:var(--mono);display:block}
+.tx-amt.inc{color:var(--blue)}.tx-amt.out{color:var(--red)}
+.tx-edit-lnk{font-size:11px;color:var(--text3);cursor:pointer;display:flex;align-items:center;gap:3px;margin-top:2px;justify-content:flex-end}
+.tx-edit-lnk:hover{color:var(--blue)}
+.tx-del{background:none;border:none;color:var(--text3);font-size:14px;padding:4px 6px;border-radius:6px;opacity:0;transition:all .15s}
+.txi:hover .tx-del{opacity:1}
+.tx-del:hover{background:var(--red-light);color:var(--red)}
+.amt-inline{width:90px;padding:4px 7px;font-size:13px;border:1px solid var(--blue-mid);border-radius:6px;font-family:var(--mono);text-align:right;outline:none}
+/* ── add form ── */
+.add-form{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;margin-bottom:18px}
+.af-title{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;align-items:end}
+.ff label{font-size:11px;color:var(--text3);display:block;margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.ff input,.ff select{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+.ff input:focus,.ff select:focus{border-color:var(--blue-mid)}
+.btn{padding:8px 18px;background:var(--text);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;height:36px}
+.btn:hover{opacity:.85}
+.btn-sm{padding:6px 14px;font-size:12px;height:32px}
+/* ── saving ── */
+.sv-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.svc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;box-shadow:var(--sh)}
+.svc-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.svc-val{font-size:22px;font-weight:600;letter-spacing:-.5px;font-family:var(--mono)}
+.svc-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.prog{margin-top:10px}
+.prog-lbr{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:4px;font-family:var(--mono)}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px}
+.cf-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.cf-tbl th{text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;padding:0 0 10px;border-bottom:1px solid var(--border)}
+.cf-tbl td{padding:9px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+.cf-tbl tr:last-child td{border-bottom:none;font-weight:600}
+.cf-mo{font-weight:500}
+.cf-in{color:var(--blue);font-family:var(--mono);text-align:right}
+.cf-out{color:var(--red);font-family:var(--mono);text-align:right}
+.cf-np{color:var(--green);font-family:var(--mono);font-weight:600;text-align:right}
+.cf-nn{color:var(--red);font-family:var(--mono);font-weight:600;text-align:right}
+.cf-bal{font-family:var(--mono);font-weight:600;text-align:right}
+.warn-pill{font-size:10px;padding:1px 6px;background:var(--red-light);color:var(--red);border-radius:20px;margin-left:6px;font-weight:500}
+/* ── extras ── */
+.extras-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.ext-sec{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);padding:16px}
+.ext-title{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ext-row{display:grid;grid-template-columns:1fr 90px 90px 30px;gap:6px;align-items:center;margin-bottom:6px}
+.ext-in{padding:6px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:100%}
+.ext-in:focus{outline:none;border-color:var(--blue-mid)}
+.ext-del{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text3);width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
+.ext-del:hover{background:var(--red-light);color:var(--red);border-color:var(--red)}
+.add-ext-btn{display:flex;align-items:center;gap:5px;padding:6px 10px;font-size:12px;border:1px dashed var(--border2);border-radius:6px;background:none;color:var(--text3);margin-top:6px;transition:all .15s;width:100%}
+.add-ext-btn:hover{border-color:var(--text2);color:var(--text)}
+/* ── recurring rates editor ── */
+.rates-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.rate-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.rate-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.rate-lbl i{font-size:13px}
+.rate-row{display:flex;align-items:center;gap:8px}
+.rate-in{flex:1;padding:6px 10px;font-size:14px;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text);font-family:var(--mono);outline:none}
+.rate-in:focus{border-color:var(--blue-mid);background:var(--surface)}
+.rate-note{font-size:11px;color:var(--text3);margin-top:4px}
+/* ── account ── */
+.acct-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;box-shadow:var(--sh);margin-bottom:12px}
+.acct-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.acct-ico{width:42px;height:42px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;color:var(--blue-mid);font-size:19px;flex-shrink:0}
+.acct-name{font-size:15px;font-weight:600}
+.acct-type{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.acct-bal{font-size:28px;font-weight:700;letter-spacing:-1px;font-family:var(--mono);margin-bottom:8px}
+.acct-meta{display:flex;gap:20px;flex-wrap:wrap}
+.acct-mi{font-size:12px;color:var(--text3)}
+.acct-mi span{color:var(--text);font-weight:500}
+.plaid-banner{background:var(--green-light);border:1px solid #A5D6B0;border-radius:var(--r);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;font-size:13px;color:var(--teal)}
+.lnk-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);text-decoration:none;transition:all .15s;margin-right:8px;margin-top:8px}
+.lnk-btn:hover{border-color:var(--border2);background:var(--surface2)}
+.bi-row{display:flex;gap:8px;align-items:center;margin-top:12px;max-width:280px}
+.bi-row input{flex:1;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:var(--mono);outline:none}
+.bi-row input:focus{border-color:var(--blue-mid)}
+/* ── breakdown table ── */
+.bdt{width:100%;font-size:13px;border-collapse:collapse}
+.bdt td{padding:8px 0;border-bottom:1px solid var(--border)}
+.bdt tr:last-child td{border-bottom:none;font-weight:600;font-size:14px;padding-top:12px}
+.bdt-lbl{color:var(--text2);display:flex;align-items:center;gap:6px}
+.bdt-lbl i{font-size:14px}
+.bdt-in{color:var(--blue);font-family:var(--mono);text-align:right}
+.bdt-out{color:var(--red);font-family:var(--mono);text-align:right}
+.bdt-np{color:var(--green);font-family:var(--mono);text-align:right;font-weight:600}
+.bdt-nn{color:var(--red);font-family:var(--mono);text-align:right;font-weight:600}
+.empty-st{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.empty-st i{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
+@media(max-width:900px){
+  .sb{width:60px}.sb .sb-logo-name,.sb .sb-logo-sub,.sb .sb-bank-name,.sb .sb-bank-num,.sb .sni span,.sb .sb-bal-card{display:none}
+  .main{margin-left:60px}.sum-row,.sv-row,.rates-grid{grid-template-columns:1fr 1fr}.bal-wrap{grid-template-columns:1fr}.fg{grid-template-columns:1fr 1fr}.extras-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-name">My Finance</div>
+    <div class="sb-logo-sub">Nic's Dashboard</div>
+  </div>
+  <div class="sb-bank">
+    <div class="sb-dot"></div>
+    <div><div class="sb-bank-name">TD Canada Trust</div><div class="sb-bank-num">•••• 4821</div></div>
+  </div>
+  <nav class="sb-nav">
+    <button class="sni active" onclick="nav('calendar')"><i class="ti ti-calendar"></i><span>Calendar</span></button>
+    <button class="sni" onclick="nav('balance')"><i class="ti ti-chart-line"></i><span>Balance</span></button>
+    <button class="sni" onclick="nav('transactions')"><i class="ti ti-list"></i><span>Transactions</span></button>
+    <button class="sni" onclick="nav('saving')"><i class="ti ti-piggy-bank"></i><span>Saving Plan</span></button>
+    <button class="sni" onclick="nav('account')"><i class="ti ti-settings"></i><span>Account</span></button>
+  </nav>
+  <div class="sb-bot">
+    <div class="sb-bal-card">
+      <div class="sbc-lbl">Current Balance</div>
+      <div class="sbc-val" id="sb-bal">—</div>
+      <div class="sbc-sub">TD •••• 4821</div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div><div class="tb-title" id="pg-title">Calendar</div><div class="tb-date">Monday, May 25, 2026</div></div>
+    <div class="mnav">
+      <button onclick="prevMo()"><i class="ti ti-chevron-left"></i></button>
+      <span class="mnav-lbl" id="mnav-lbl"></span>
+      <button onclick="nextMo()"><i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="sum-row" id="sum-row"></div>
+
+    <!-- CALENDAR -->
+    <div class="sec active" id="sec-calendar">
+      <div class="cal-legend">
+        <div class="leg"><div class="leg-dot" style="background:#378ADD"></div>Pay day</div>
+        <div class="leg"><div class="leg-dot" style="background:#BA7517"></div>Rent</div>
+        <div class="leg"><div class="leg-dot" style="background:#D85A30"></div>ICBC</div>
+        <div class="leg"><div class="leg-dot" style="background:#639922"></div>Gym</div>
+        <div class="leg"><div class="leg-dot" style="background:#7F77DD"></div>WiFi</div>
+        <div class="leg"><div class="leg-dot" style="background:#888780"></div>Gas</div>
+        <div class="leg"><div class="leg-dot" style="background:#D4537E"></div>Phone</div>
+        <div class="leg"><div class="leg-dot" style="background:#1D9E75"></div>Car wash</div>
+        <div class="leg"><div class="leg-dot" style="background:#7F77DD"></div>Manual</div>
+      </div>
+      <div class="cg" id="cal-hdr"></div>
+      <div class="cg" id="cal-body" style="margin-top:4px"></div>
+      <div id="day-detail" style="margin-top:16px"></div>
+    </div>
+
+    <!-- BALANCE -->
+    <div class="sec" id="sec-balance">
+      <div class="period-picker">
+        <i class="ti ti-calendar-event" style="font-size:15px;color:var(--text3)"></i>
+        <span class="pp-lbl">From</span>
+        <input type="month" class="pp-input" id="bal-from" value="2026-05" onchange="renderBalance()">
+        <span class="pp-lbl">To</span>
+        <input type="month" class="pp-input" id="bal-to" value="2026-12" onchange="renderBalance()">
+        <button class="btn btn-sm" onclick="renderBalance()"><i class="ti ti-refresh" style="font-size:13px"></i>Update</button>
+      </div>
+      <div class="bal-wrap">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chart-bar"></i><span id="bal-chart-title">Balance projection</span></div>
+          <div class="bars" id="bal-bars"></div>
+          <div style="display:flex;justify-content:space-between;padding:0 2px;margin-top:2px" id="bal-mo-row"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-calendar-stats"></i><span id="bdt-title">Month breakdown</span></div>
+          <table class="bdt" id="bdt"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS -->
+    <div class="sec" id="sec-transactions">
+      <div class="add-form">
+        <div class="af-title"><i class="ti ti-plus" style="font-size:15px"></i>Add transaction</div>
+        <div class="fg">
+          <div class="ff"><label>Description</label><input type="text" id="tx-desc" placeholder="e.g. Groceries"></div>
+          <div class="ff"><label>Amount ($)</label><input type="number" id="tx-amt" placeholder="0.00" step="0.01" min="0"></div>
+          <div class="ff"><label>Date</label><input type="date" id="tx-date" value="2026-05-25"></div>
+          <div class="ff"><label>Type</label><select id="tx-type"><option value="expense">Expense</option><option value="income">Income</option></select></div>
+        </div>
+        <div class="fg" style="margin-top:10px">
+          <div class="ff"><label>Category</label>
+            <select id="tx-cat">
+              <option>Food & Groceries</option><option>Transport</option><option>Entertainment</option>
+              <option>Shopping</option><option>Health</option><option>Bills</option>
+              <option>Dining Out</option><option>Salary</option><option>Other</option>
+            </select>
+          </div>
+          <div class="ff"><label>&nbsp;</label><button class="btn" onclick="addTx()" style="width:100%"><i class="ti ti-plus" style="font-size:14px"></i>Add</button></div>
+        </div>
+      </div>
+      <div class="tx-toolbar">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="tx-mo-pill" id="tx-mo-pill"></span>
+          <div class="txfs" id="txfs"></div>
+        </div>
+        <span style="font-size:12px;color:var(--text3)" id="tx-count"></span>
+      </div>
+      <div class="tx-list" id="tx-list"></div>
+    </div>
+
+    <!-- SAVING PLAN -->
+    <div class="sec" id="sec-saving">
+      <div class="sv-row" id="sv-row"></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title"><i class="ti ti-table"></i>Monthly cashflow + running balance</div>
+        <table class="cf-tbl">
+          <thead><tr><th>Month</th><th style="text-align:right">Income</th><th style="text-align:right">Expenses</th><th style="text-align:right">Net</th><th style="text-align:right">Closing Balance</th></tr></thead>
+          <tbody id="cf-body"></tbody>
+        </table>
+      </div>
+      <div class="extras-grid">
+        <div class="ext-sec">
+          <div class="ext-title" style="color:var(--green)"><i class="ti ti-plus" style="font-size:14px"></i>Extra income</div>
+          <div id="ext-inc-list"></div>
+          <button class="add-ext-btn" onclick="addExtra('income')"><i class="ti ti-plus" style="font-size:12px"></i>Add income source</button>
+        </div>
+        <div class="ext-sec">
+          <div class="ext-title" style="color:var(--red)"><i class="ti ti-minus" style="font-size:14px"></i>Extra expenses</div>
+          <div id="ext-exp-list"></div>
+          <button class="add-ext-btn" onclick="addExtra('expense')"><i class="ti ti-plus" style="font-size:12px"></i>Add expense</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div class="sec" id="sec-account">
+      <div class="plaid-banner"><i class="ti ti-circle-check" style="font-size:17px;flex-shrink:0"></i><div><strong>Connected via Plaid sandbox</strong> — TD Canada Trust linked. Sign up at plaid.com to connect your real bank.</div></div>
+
+      <!-- Recurring rates editor -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title"><i class="ti ti-adjustments-horizontal"></i>Edit recurring rates — changes apply everywhere</div>
+        <div class="rates-grid" id="rates-grid"></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:4px"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>These are the base rates used for projections. Individual transactions can also be edited in the Transactions tab.</div>
+      </div>
+
+      <div id="account-content"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const TODAY=new Date(2026,4,25);
+const PAY_ANCHOR=new Date(2026,4,8);
+const GYM_ANCHOR=new Date(2026,4,13);
+const ICBC_DATE=new Date(2026,5,26);
+
+// ── editable recurring rates ──────────────────────────────────────────────
+let R={
+  salary:1509.88,
+  rent:2150,
+  gym:35.65,
+  wifi:60,
+  carwash:12,
+  phone:35,
+  gas:65,
+  icbc:4200
+};
+
+let openingBalance=4250;
+let vY=2026,vM=4;
+let txFilter='all';
+let nextId=1;
+let extras={income:[],expense:[]};
+
+// ── date helpers ──────────────────────────────────────────────────────────
+function isSame(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+const D=86400000;
+
+function payDates(y,m){
+  const s=new Date(y,m,1),e=new Date(y,m+1,0),r=[];
+  let d=new Date(PAY_ANCHOR);
+  while(d>=s)d=new Date(d-14*D);
+  d=new Date(d.getTime()+14*D);
+  while(d<=e){if(d>=s)r.push(new Date(d));d=new Date(d.getTime()+14*D);}
+  return r;
+}
+function gymDates(y,m){
+  const s=new Date(y,m,1),e=new Date(y,m+1,0),r=[];
+  let d=new Date(GYM_ANCHOR);
+  while(d>=s)d=new Date(d-14*D);
+  d=new Date(d.getTime()+14*D);
+  while(d<=e){if(d>=s)r.push(new Date(d));d=new Date(d.getTime()+14*D);}
+  return r;
+}
+function mondays(y,m){let n=0,d=new Date(y,m,1),e=new Date(y,m+1,0);while(d<=e){if(d.getDay()===1)n++;d=new Date(d.getTime()+D);}return n}
+
+function extraInc(){return extras.income.reduce((a,e)=>a+(e.freq==='monthly'?+e.amt:0),0)}
+function extraExp(){return extras.expense.reduce((a,e)=>a+(e.freq==='monthly'?+e.amt:0),0)}
+
+// ── manual tx helpers ─────────────────────────────────────────────────────
+function manualInc(y,m){return transactions.filter(t=>!t.rec&&t.type==='income'&&t.date.getFullYear()===y&&t.date.getMonth()===m).reduce((a,t)=>a+t.amt,0)}
+function manualExp(y,m){return transactions.filter(t=>!t.rec&&t.type==='expense'&&t.date.getFullYear()===y&&t.date.getMonth()===m).reduce((a,t)=>a+t.amt,0)}
+
+// ── month totals ──────────────────────────────────────────────────────────
+function mInc(y,m){return payDates(y,m).length*R.salary+extraInc()+manualInc(y,m)}
+function mExp(y,m){
+  let t=R.rent+R.wifi+R.carwash+R.phone+mondays(y,m)*R.gas+gymDates(y,m).length*R.gym+extraExp()+manualExp(y,m);
+  if(y===ICBC_DATE.getFullYear()&&m===ICBC_DATE.getMonth())t+=R.icbc;
+  return t;
+}
+function mNet(y,m){return mInc(y,m)-mExp(y,m)}
+
+function runBals(fY,fM,tY,tM){
+  let bal=openingBalance,r=[];
+  let y=fY,m=fM;
+  while(y<tY||(y===tY&&m<=tM)){
+    bal=Math.round((bal+mNet(y,m))*100)/100;
+    r.push({y,m,bal});
+    m++;if(m>11){m=0;y++;}
+  }
+  return r;
+}
+
+function curBal(){return Math.round((openingBalance+transactions.reduce((a,t)=>t.type==='income'?a+t.amt:a-t.amt,0))*100)/100}
+
+function fmt(n,sign=false){
+  const s='$'+Math.abs(n).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return sign?(n>=0?'+':'-')+s:s;
+}
+
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const CI={'Salary':'ti-cash','Rent':'ti-home','Gym':'ti-barbell','WiFi':'ti-wifi','Gas':'ti-gas-station','Car Wash':'ti-car','Phone':'ti-phone','ICBC Insurance':'ti-car-crash','Food & Groceries':'ti-shopping-cart','Transport':'ti-bus','Entertainment':'ti-device-tv','Shopping':'ti-tag','Health':'ti-heart','Bills':'ti-receipt','Dining Out':'ti-tools-kitchen-2','Other':'ti-dots'};
+const CC={'Salary':'#185FA5','Rent':'#BA7517','Gym':'#639922','WiFi':'#7F77DD','Gas':'#888780','Car Wash':'#1D9E75','Phone':'#D4537E','ICBC Insurance':'#D85A30','Food & Groceries':'#378ADD','Transport':'#888780','Entertainment':'#7F77DD','Shopping':'#D4537E','Health':'#1D9E75','Bills':'#BA7517','Dining Out':'#D85A30','Other':'#888780'};
+
+// ── seed recurring transactions for current month only ───────────────────
+let transactions=[];
+function seedMonth(y,m){
+  // only add if not already there
+  function already(desc,date){return transactions.some(t=>t.rec&&t.desc===desc&&isSame(t.date,date))}
+  payDates(y,m).forEach(d=>{if(!already('Salary',d))transactions.push({id:nextId++,desc:'Salary',amt:R.salary,date:new Date(d),type:'income',cat:'Salary',rec:true})});
+  gymDates(y,m).forEach(d=>{if(!already('Gym Membership',d))transactions.push({id:nextId++,desc:'Gym Membership',amt:R.gym,date:new Date(d),type:'expense',cat:'Gym',rec:true})});
+  const fixed=[
+    {desc:'Rent',amt:R.rent,day:1,cat:'Rent'},
+    {desc:'WiFi Bill',amt:R.wifi,day:10,cat:'WiFi'},
+    {desc:'Car Wash',amt:R.carwash,day:15,cat:'Car Wash'},
+    {desc:'Phone Bill',amt:R.phone,day:20,cat:'Phone'},
+  ];
+  fixed.forEach(f=>{const d=new Date(y,m,f.day);if(!already(f.desc,d))transactions.push({id:nextId++,desc:f.desc,amt:f.amt,date:d,type:'expense',cat:f.cat,rec:true})});
+  // gas mondays
+  let d=new Date(y,m,1),e=new Date(y,m+1,0);
+  while(d<=e){if(d.getDay()===1){if(!already('Gas Fill-up',d))transactions.push({id:nextId++,desc:'Gas Fill-up',amt:R.gas,date:new Date(d),type:'expense',cat:'Gas',rec:true});}d=new Date(d.getTime()+D);}
+  // icbc
+  if(y===ICBC_DATE.getFullYear()&&m===ICBC_DATE.getMonth()){if(!already('ICBC Insurance',ICBC_DATE))transactions.push({id:nextId++,desc:'ICBC Insurance',amt:R.icbc,date:new Date(ICBC_DATE),type:'expense',cat:'ICBC Insurance',rec:true});}
+}
+seedMonth(2026,4);
+
+// ── RENDER ALL ────────────────────────────────────────────────────────────
+function renderAll(){
+  renderSidebar();renderSummary();renderCal();renderTx();
+  if(document.getElementById('sec-balance').classList.contains('active'))renderBalance();
+  if(document.getElementById('sec-saving').classList.contains('active'))renderSaving();
+  if(document.getElementById('sec-account').classList.contains('active'))renderAccount();
+}
+
+function renderSidebar(){
+  const b=curBal();
+  document.getElementById('sb-bal').textContent=fmt(b);
+  document.getElementById('sb-bal').style.color=b>=0?'#fff':'#F09595';
+}
+
+function renderSummary(){
+  document.getElementById('mnav-lbl').textContent=MN[vM]+' '+vY;
+  const inc=mInc(vY,vM),exp=mExp(vY,vM),net=inc-exp,bal=curBal();
+  const proj=runBals(2026,4,2026,11)[7].bal;
+  document.getElementById('sum-row').innerHTML=`
+    <div class="sc"><div class="sc-lbl">Current balance</div><div class="sc-val" style="color:${bal>=0?'var(--blue)':'var(--red)'}">${fmt(bal)}</div><div class="sc-sub">TD •••• 4821</div></div>
+    <div class="sc"><div class="sc-lbl">${MS[vM]} income</div><div class="sc-val" style="color:var(--blue)">${fmt(inc)}</div><div class="sc-sub">${payDates(vY,vM).length} pay periods</div></div>
+    <div class="sc"><div class="sc-lbl">${MS[vM]} expenses</div><div class="sc-val" style="color:var(--red)">${fmt(exp)}</div><div class="sc-sub">${vY===ICBC_DATE.getFullYear()&&vM===ICBC_DATE.getMonth()?'incl. ICBC':'recurring'}</div></div>
+    <div class="sc"><div class="sc-lbl">Projected Dec balance</div><div class="sc-val" style="color:${proj>=0?'var(--blue)':'var(--red)'}">${fmt(proj)}</div><div class="sc-sub">May–Dec 2026</div></div>`;
+}
+
+// ── CALENDAR ──────────────────────────────────────────────────────────────
+function renderCal(){
+  document.getElementById('cal-hdr').innerHTML=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cdow">${d}</div>`).join('');
+  const first=new Date(vY,vM,1).getDay(),dim=new Date(vY,vM+1,0).getDate(),prev=new Date(vY,vM,0).getDate();
+  const pd=payDates(vY,vM),gd=gymDates(vY,vM);
+  let html='';
+  for(let i=0;i<first;i++)html+=`<div class="cc other"><span class="dn">${prev-first+1+i}</span></div>`;
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(vY,vM,d);
+    const pay=pd.some(x=>isSame(x,dt)),gym=gd.some(x=>isSame(x,dt));
+    const rent=d===1,wifi=d===10,wash=d===15,phone=d===20,gas=dt.getDay()===1,icbc=isSame(dt,ICBC_DATE),tod=isSame(dt,TODAY);
+    const manTx=transactions.filter(t=>isSame(t.date,dt)&&!t.rec);
+    const hasManI=manTx.some(t=>t.type==='income'),hasManE=manTx.some(t=>t.type==='expense');
+    const hasI=pay||hasManI,hasE=gym||rent||wifi||wash||phone||gas||icbc||hasManE;
+    let cls='cc'+(tod?' today':'')+(hasI&&hasE?' both':hasI?' pay':hasE?' expense':'');
+    const b=(pay?'<span class="bdg b-pay">Pay</span>':'')+(rent?'<span class="bdg b-rent">Rent</span>':'')+(gym?'<span class="bdg b-gym">Gym</span>':'')+(wifi?'<span class="bdg b-wifi">WiFi</span>':'')+(gas?'<span class="bdg b-gas">Gas</span>':'')+(wash?'<span class="bdg b-wash">Wash</span>':'')+(phone?'<span class="bdg b-phone">Phone</span>':'')+(icbc?'<span class="bdg b-icbc">ICBC</span>':'')+(manTx.length?`<span class="bdg b-manual">+${manTx.length}</span>`:'');
+    html+=`<div class="${cls}" onclick="showDay(${d})"><span class="dn">${d}</span>${b}</div>`;
+  }
+  for(let d=1;d<=42-first-dim;d++)html+=`<div class="cc other"><span class="dn">${d}</span></div>`;
+  document.getElementById('cal-body').innerHTML=html;
+}
+
+function showDay(d){
+  const dt=new Date(vY,vM,d),ev=[];
+  if(payDates(vY,vM).some(x=>isSame(x,dt)))ev.push({l:'Salary deposit',a:R.salary,t:'income',ic:'ti-cash'});
+  if(d===1)ev.push({l:'Rent',a:R.rent,t:'expense',ic:'ti-home'});
+  if(gymDates(vY,vM).some(x=>isSame(x,dt)))ev.push({l:'Gym Membership',a:R.gym,t:'expense',ic:'ti-barbell'});
+  if(d===10)ev.push({l:'WiFi Bill',a:R.wifi,t:'expense',ic:'ti-wifi'});
+  if(d===15)ev.push({l:'Car Wash',a:R.carwash,t:'expense',ic:'ti-car'});
+  if(d===20)ev.push({l:'Phone Bill',a:R.phone,t:'expense',ic:'ti-phone'});
+  if(dt.getDay()===1)ev.push({l:'Gas Fill-up',a:R.gas,t:'expense',ic:'ti-gas-station'});
+  if(isSame(dt,ICBC_DATE))ev.push({l:'ICBC Insurance',a:R.icbc,t:'expense',ic:'ti-car-crash'});
+  transactions.filter(t=>isSame(t.date,dt)&&!t.rec).forEach(t=>ev.push({l:t.desc,a:t.amt,t:t.type,ic:CI[t.cat]||'ti-dots',manual:true,id:t.id}));
+  if(!ev.length){document.getElementById('day-detail').innerHTML='';return;}
+  const rows=ev.map(e=>`<tr><td class="bdt-lbl"><i class="ti ${e.ic}"></i>${e.l}${e.manual?'<span style="font-size:10px;padding:1px 6px;background:var(--blue-light);color:var(--blue);border-radius:20px;margin-left:6px">manual</span>':''}</td><td class="${e.t==='income'?'bdt-in':'bdt-out'}">${e.t==='income'?'+':'-'}${fmt(e.a)}</td></tr>`).join('');
+  document.getElementById('day-detail').innerHTML=`<div class="card"><div class="card-title"><i class="ti ti-calendar-event"></i>${dt.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'})}</div><table class="bdt">${rows}</table></div>`;
+}
+
+// ── BALANCE ───────────────────────────────────────────────────────────────
+function renderBalance(){
+  const fv=document.getElementById('bal-from').value,tv=document.getElementById('bal-to').value;
+  if(!fv||!tv)return;
+  const [fY,fM]=[+fv.split('-')[0],+fv.split('-')[1]-1];
+  const [tY,tM]=[+tv.split('-')[0],+tv.split('-')[1]-1];
+  if(fY>tY||(fY===tY&&fM>tM)){alert('Start must be before end');return;}
+  // seed all months in range so recurring data is available
+  let y=fY,m=fM;
+  while(y<tY||(y===tY&&m<=tM)){seedMonth(y,m);m++;if(m>11){m=0;y++;}}
+  const bals=runBals(fY,fM,tY,tM);
+  const maxA=Math.max(...bals.map(b=>Math.abs(b.bal)),1);
+  document.getElementById('bal-chart-title').textContent=`Balance projection (${MS[fM]} ${fY} – ${MS[tM]} ${tY})`;
+  document.getElementById('bal-bars').innerHTML=bals.map(b=>{
+    const h=Math.round(Math.abs(b.bal)/maxA*130)+10;
+    return`<div class="bw"><div class="bar-val" style="color:${b.bal>=0?'var(--blue)':'var(--red)'}">${b.bal>=0?'':'-'}$${Math.abs(Math.round(b.bal)).toLocaleString()}</div><div class="bar ${b.bal>=0?'pos':'neg'}" style="height:${h}px"></div></div>`;
+  }).join('');
+  document.getElementById('bal-mo-row').innerHTML=bals.map(b=>`<span style="font-size:9px;color:var(--text3);flex:1;text-align:center">${MS[b.m]} ${b.y!==fY?b.y:''}</span>`).join('');
+  renderBreakdown();
+}
+
+function renderBreakdown(){
+  document.getElementById('bdt-title').textContent=MN[vM]+' '+vY+' breakdown';
+  seedMonth(vY,vM);
+  const pc=payDates(vY,vM).length,gc=gymDates(vY,vM).length,mo=mondays(vY,vM);
+  const mI=manualInc(vY,vM),mE=manualExp(vY,vM);
+  const inc=mInc(vY,vM),exp=mExp(vY,vM),net=inc-exp;
+  const rows=[
+    ['ti-cash','Salary ('+pc+' periods)',pc*R.salary,'in'],
+    ['ti-home','Rent',R.rent,'out'],
+    ['ti-gas-station','Gas ('+mo+' fill-ups)',mo*R.gas,'out'],
+    ['ti-barbell','Gym ('+gc+' sessions)',gc*R.gym,'out'],
+    ['ti-wifi','WiFi',R.wifi,'out'],
+    ['ti-phone','Phone',R.phone,'out'],
+    ['ti-car','Car wash',R.carwash,'out'],
+  ];
+  if(vY===ICBC_DATE.getFullYear()&&vM===ICBC_DATE.getMonth())rows.push(['ti-car-crash','ICBC Insurance',R.icbc,'out']);
+  if(extraInc()>0)rows.push(['ti-plus','Extra income',extraInc(),'in']);
+  if(extraExp()>0)rows.push(['ti-minus','Extra expenses',extraExp(),'out']);
+  if(mI>0)rows.push(['ti-plus','Manual income',mI,'in']);
+  if(mE>0)rows.push(['ti-minus','Manual expenses',mE,'out']);
+  document.getElementById('bdt').innerHTML=rows.map(([ic,l,a,t])=>`<tr><td class="bdt-lbl"><i class="ti ${ic}"></i>${l}</td><td class="${t==='in'?'bdt-in':'bdt-out'}">${t==='in'?'+':'-'}${fmt(a)}</td></tr>`).join('')+`<tr><td style="font-weight:600;padding-top:12px">Net this month</td><td class="${net>=0?'bdt-np':'bdt-nn'}" style="padding-top:12px">${fmt(net,true)}</td></tr>`;
+}
+
+// ── TRANSACTIONS ──────────────────────────────────────────────────────────
+function renderTx(){
+  seedMonth(vY,vM);
+  document.getElementById('tx-mo-pill').textContent=MN[vM]+' '+vY;
+  document.getElementById('txfs').innerHTML=['all','income','expense'].map(f=>`<button class="tf${txFilter===f?' active':''}" onclick="setTxF('${f}')">${f[0].toUpperCase()+f.slice(1)}</button>`).join('');
+  let list=transactions.filter(t=>t.date.getFullYear()===vY&&t.date.getMonth()===vM);
+  if(txFilter!=='all')list=list.filter(t=>t.type===txFilter);
+  list.sort((a,b)=>b.date-a.date);
+  document.getElementById('tx-count').textContent=list.length+' transaction'+(list.length!==1?'s':'');
+  if(!list.length){
+    document.getElementById('tx-list').innerHTML=`<div class="empty-st"><i class="ti ti-receipt-off"></i>No transactions in ${MN[vM]} ${vY}</div>`;
+    return;
+  }
+  document.getElementById('tx-list').innerHTML=list.map(t=>{
+    const icon=CI[t.cat]||'ti-dots',color=CC[t.cat]||'#888';
+    return`<div class="txi" id="tr-${t.id}">
+      <div class="tx-ico" style="background:${color}18;color:${color}"><i class="ti ${icon}"></i></div>
+      <div class="tx-meta">
+        <div class="tx-name">${t.desc}</div>
+        <div class="tx-pills">
+          <span class="tx-dp">${t.date.toLocaleDateString('en-CA',{month:'short',day:'numeric'})}</span>
+          <span class="tx-cp">${t.cat}</span>
+          ${t.rec?'<span class="tx-rp"><i class="ti ti-refresh" style="font-size:10px;margin-right:2px"></i>recurring</span>':''}
+        </div>
+      </div>
+      <div class="tx-right">
+        <div class="tx-amtw">
+          <span class="tx-amt ${t.type==='income'?'inc':'out'}" id="ta-${t.id}">${t.type==='income'?'+':'-'}${fmt(t.amt)}</span>
+          <span class="tx-edit-lnk" onclick="editAmt(${t.id})"><i class="ti ti-pencil" style="font-size:10px"></i>edit</span>
+        </div>
+        <button class="tx-del" onclick="delTx(${t.id})" title="Delete"><i class="ti ti-x"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setTxF(f){txFilter=f;renderTx()}
+
+function editAmt(id){
+  const tx=transactions.find(t=>t.id===id);if(!tx)return;
+  const wrap=document.getElementById('ta-'+id).parentElement;
+  const isInc=tx.type==='income';
+  wrap.innerHTML=`<input class="amt-inline" type="number" value="${tx.amt.toFixed(2)}" step="0.01" min="0" id="ai-${id}" onkeydown="if(event.key==='Enter')saveAmt(${id});if(event.key==='Escape')renderTx()">
+    <span class="tx-edit-lnk" onclick="saveAmt(${id})"><i class="ti ti-check" style="font-size:10px"></i>save</span>`;
+  const inp=document.getElementById('ai-'+id);inp.focus();inp.select();
+}
+
+function saveAmt(id){
+  const inp=document.getElementById('ai-'+id);if(!inp)return;
+  const v=parseFloat(inp.value);
+  if(!isNaN(v)&&v>0){
+    const tx=transactions.find(t=>t.id===id);
+    if(tx){
+      tx.amt=Math.round(v*100)/100;
+      // if recurring salary, update R.salary for projection consistency (optional — keep individual edit only)
+    }
+  }
+  renderAll();
+}
+
+function addTx(){
+  const desc=document.getElementById('tx-desc').value.trim();
+  const amt=parseFloat(document.getElementById('tx-amt').value);
+  const dv=document.getElementById('tx-date').value;
+  const type=document.getElementById('tx-type').value;
+  const cat=document.getElementById('tx-cat').value;
+  if(!desc||isNaN(amt)||amt<=0||!dv)return;
+  const p=dv.split('-');
+  const txDate=new Date(+p[0],+p[1]-1,+p[2]);
+  transactions.push({id:nextId++,desc,amt:Math.round(amt*100)/100,date:txDate,type,cat,rec:false});
+  document.getElementById('tx-desc').value='';
+  document.getElementById('tx-amt').value='';
+  vY=txDate.getFullYear();vM=txDate.getMonth();
+  renderAll();
+}
+
+function delTx(id){transactions=transactions.filter(t=>t.id!==id);renderAll()}
+
+// ── SAVING PLAN ───────────────────────────────────────────────────────────
+function renderSaving(){
+  const bals=runBals(2026,4,2026,11);
+  const icbcPP=Math.ceil(R.icbc/4);
+  const worst=Math.min(...bals.map(b=>b.bal));
+  const projNet=bals[7].bal-openingBalance;
+  const totalInc=bals.reduce((a,b,i)=>a+mInc(2026,4+i),0);
+  document.getElementById('sv-row').innerHTML=`
+    <div class="svc"><div class="svc-lbl">ICBC save/paycheque</div><div class="svc-val" style="color:var(--amber)">${fmt(icbcPP)}</div><div class="svc-sub">Set aside each pay for Jun 26</div>
+      <div class="prog"><div class="prog-lbr"><span>Est. saved</span><span>${fmt(Math.min(openingBalance*.3,R.icbc))} / ${fmt(R.icbc)}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,openingBalance*.3/R.icbc*100).toFixed(0)}%;background:var(--amber)"></div></div></div>
+    </div>
+    <div class="svc"><div class="svc-lbl">Lowest projected balance</div><div class="svc-val" style="color:${worst>=0?'var(--blue)':'var(--red)'}">${fmt(worst)}</div><div class="svc-sub">${worst<0?'Deficit — save ahead!':'Healthy buffer'}</div></div>
+    <div class="svc"><div class="svc-lbl">Net change May–Dec</div><div class="svc-val" style="color:${projNet>=0?'var(--blue)':'var(--red)'}">${fmt(projNet,true)}</div><div class="svc-sub">Change in bank balance</div></div>
+    <div class="svc"><div class="svc-lbl">Total income May–Dec</div><div class="svc-val" style="color:var(--blue)">${fmt(totalInc)}</div><div class="svc-sub">All pay periods</div></div>`;
+  const moN=['May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('cf-body').innerHTML=bals.map((b,i)=>{
+    const y=2026,m=4+i,inc=mInc(y,m),exp=mExp(y,m),net=inc-exp;
+    return`<tr><td class="cf-mo">${moN[i]}${m===ICBC_DATE.getMonth()&&y===ICBC_DATE.getFullYear()?'<span class="warn-pill">ICBC</span>':''}</td><td class="cf-in">+${fmt(inc)}</td><td class="cf-out">-${fmt(exp)}</td><td class="${net>=0?'cf-np':'cf-nn'}">${fmt(net,true)}</td><td class="cf-bal" style="color:${b.bal>=0?'var(--blue)':'var(--red)'}">${fmt(b.bal)}</td></tr>`;
+  }).join('');
+  renderExtras();
+}
+
+function renderExtras(){
+  ['income','expense'].forEach(type=>{
+    document.getElementById(`ext-${type==='income'?'inc':'exp'}-list`).innerHTML=extras[type].map((e,i)=>`
+      <div class="ext-row">
+        <input class="ext-in" value="${e.desc}" oninput="upExtra('${type}',${i},'desc',this.value)" placeholder="Description">
+        <input class="ext-in" type="number" value="${e.amt}" oninput="upExtra('${type}',${i},'amt',parseFloat(this.value)||0)" placeholder="0.00" step="0.01">
+        <select class="ext-in" onchange="upExtra('${type}',${i},'freq',this.value)">
+          <option value="monthly"${e.freq==='monthly'?' selected':''}>Monthly</option>
+          <option value="one-time"${e.freq==='one-time'?' selected':''}>One-time</option>
+        </select>
+        <button class="ext-del" onclick="rmExtra('${type}',${i})"><i class="ti ti-x"></i></button>
+      </div>`).join('');
+  });
+}
+
+function addExtra(t){extras[t].push({desc:'',amt:0,freq:'monthly'});renderSaving()}
+function rmExtra(t,i){extras[t].splice(i,1);renderAll()}
+function upExtra(t,i,k,v){extras[t][i][k]=v;renderAll()}
+
+// ── ACCOUNT / RATES ───────────────────────────────────────────────────────
+function renderAccount(){
+  const rateItems=[
+    {key:'salary',label:'Salary (net/period)',icon:'ti-cash',note:'Biweekly from May 8'},
+    {key:'rent',label:'Rent',icon:'ti-home',note:'Monthly on the 1st'},
+    {key:'gym',label:'Gym Membership',icon:'ti-barbell',note:'Biweekly from May 13'},
+    {key:'wifi',label:'WiFi',icon:'ti-wifi',note:'Monthly on the 10th'},
+    {key:'phone',label:'Phone Bill',icon:'ti-phone',note:'Monthly on the 20th'},
+    {key:'gas',label:'Gas (per fill-up)',icon:'ti-gas-station',note:'Every Monday'},
+    {key:'carwash',label:'Car Wash',icon:'ti-car',note:'Monthly on the 15th'},
+    {key:'icbc',label:'ICBC Insurance',icon:'ti-car-crash',note:'One-time Jun 26'},
+  ];
+  document.getElementById('rates-grid').innerHTML=rateItems.map(it=>`
+    <div class="rate-card">
+      <div class="rate-lbl"><i class="ti ${it.icon}"></i>${it.label}</div>
+      <div class="rate-row">
+        <input class="rate-in" type="number" value="${R[it.key].toFixed(2)}" step="0.01" min="0" id="rate-${it.key}" onchange="updateRate('${it.key}',this.value)">
+      </div>
+      <div class="rate-note">${it.note}</div>
+    </div>`).join('');
+
+  const bal=curBal();
+  document.getElementById('account-content').innerHTML=`
+    <div class="acct-card">
+      <div class="acct-hdr"><div class="acct-ico"><i class="ti ti-building-bank"></i></div><div><div class="acct-name">TD Canada Trust</div><div class="acct-type">Chequing — •••• 4821</div></div></div>
+      <div class="acct-bal" style="color:${bal>=0?'var(--blue)':'var(--red)'}">${fmt(bal)}</div>
+      <div class="acct-meta">
+        <div class="acct-mi">Available: <span>${fmt(bal)}</span></div>
+        <div class="acct-mi">Opening: <span>${fmt(openingBalance)}</span></div>
+        <div class="acct-mi">Status: <span style="color:var(--green-mid)">Connected</span></div>
+      </div>
+      <div style="margin-top:16px"><div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.4px">Adjust opening balance</div>
+        <div class="bi-row"><input type="number" id="bal-in" value="${openingBalance}" step="50"><button class="btn" onclick="updateBal()"><i class="ti ti-check" style="font-size:14px"></i>Update</button></div>
+      </div>
+    </div>
+    <div class="acct-card">
+      <div class="acct-hdr"><div class="acct-ico" style="background:var(--green-light);color:var(--teal)"><i class="ti ti-link"></i></div><div><div class="acct-name">Plaid Integration</div><div class="acct-type">Sandbox — ready for production</div></div></div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:14px">Running on Plaid sandbox. To connect your real bank, sign up at plaid.com for a developer account (free), get your <code style="font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:4px">client_id</code> and <code style="font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:4px">secret</code>, and add a small Node.js backend. Supports TD, RBC, Scotiabank, CIBC, BMO and 12,000+ institutions.</div>
+      <a href="https://dashboard.plaid.com/signup" target="_blank" class="lnk-btn"><i class="ti ti-external-link" style="font-size:13px"></i>Plaid dashboard</a>
+      <a href="https://plaid.com/docs/" target="_blank" class="lnk-btn"><i class="ti ti-book" style="font-size:13px"></i>Plaid docs</a>
+      <a href="https://plaid.com/docs/quickstart/" target="_blank" class="lnk-btn"><i class="ti ti-rocket" style="font-size:13px"></i>Quickstart guide</a>
+    </div>`;
+}
+
+function updateRate(key,val){
+  const v=parseFloat(val);
+  if(!isNaN(v)&&v>=0){
+    R[key]=Math.round(v*100)/100;
+    // update all existing recurring transactions of that type so the tx list reflects the change
+    const descMap={salary:'Salary',rent:'Rent',gym:'Gym Membership',wifi:'WiFi Bill',carwash:'Car Wash',phone:'Phone Bill',gas:'Gas Fill-up',icbc:'ICBC Insurance'};
+    const desc=descMap[key];
+    if(desc)transactions.filter(t=>t.rec&&t.desc===desc).forEach(t=>t.amt=R[key]);
+    renderAll();
+  }
+}
+
+function updateBal(){
+  const v=parseFloat(document.getElementById('bal-in').value);
+  if(!isNaN(v)&&v>=0){openingBalance=v;renderAll();}
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+const TITLES={calendar:'Calendar',balance:'Balance',transactions:'Transactions',saving:'Saving Plan',account:'Account'};
+function nav(name){
+  document.querySelectorAll('.sni').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick')===`nav('${name}')`));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.getElementById('pg-title').textContent=TITLES[name];
+  if(name==='balance')renderBalance();
+  if(name==='saving')renderSaving();
+  if(name==='account')renderAccount();
+}
+
+function prevMo(){vM--;if(vM<0){vM=11;vY--;}renderAll();if(document.getElementById('sec-balance').classList.contains('active'))renderBreakdown();}
+function nextMo(){vM++;if(vM>11){vM=0;vY++;}renderAll();if(document.getElementById('sec-balance').classList.contains('active'))renderBreakdown();}
+
+renderAll();
+</script>
+</body>
+</html>
