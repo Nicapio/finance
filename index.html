@@ -102,12 +102,14 @@ button{cursor:pointer}
 .cc{min-height:72px;border-radius:8px;border:1px solid var(--border);background:var(--surface);padding:6px 7px;cursor:pointer;transition:box-shadow .15s}
 .cc:hover:not(.other){box-shadow:var(--shm)}
 .cc.other{opacity:.3}
-.cc.today{border-color:var(--blue-mid);border-width:1.5px}
+.cc.today{border-color:var(--blue-mid);border-width:1.5px;position:relative}
+.today-img{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--blue-mid);box-shadow:0 1px 4px rgba(0,0,0,.18);pointer-events:none}
 .cc.pay{background:#EBF4FD;border-color:#9EC8EF}
 .cc.expense{background:#FEF2EE;border-color:#F0B49A}
 .cc.both{background:linear-gradient(135deg,#EBF4FD 50%,#FEF2EE 50%);border-color:#9EC8EF}
 .dn{font-size:11px;font-weight:600;display:block;margin-bottom:3px}
 .bdg{display:inline-block;font-size:8px;border-radius:3px;padding:1px 3px;color:#fff;margin:1px 1px 0 0;font-weight:500;line-height:1.5}
+.bdg-flag{display:flex;align-items:center;gap:2px;font-size:9px;font-weight:500;padding:2px 5px 2px 3px;border-radius:0 4px 4px 0;margin:2px 1px 0 0;color:#fff;border-left:3px solid rgba(0,0,0,.2);line-height:1.4;max-width:100%;overflow:hidden;white-space:nowrap}
 .b-pay{background:#378ADD}.b-rent{background:#BA7517}.b-gym{background:#639922}
 .b-wifi{background:#7F77DD}.b-gas{background:#888780}.b-wash{background:#1D9E75}
 .b-phone{background:#D4537E}.b-icbc{background:#D85A30}.b-manual{background:#7F77DD}
@@ -181,7 +183,7 @@ button{cursor:pointer}
 .cf-np{color:var(--green);font-family:var(--mono);font-weight:600;text-align:right}
 .cf-nn{color:var(--red);font-family:var(--mono);font-weight:600;text-align:right}
 .cf-bal{font-family:var(--mono);font-weight:600;text-align:right}
-.warn-pill{font-size:10px;padding:1px 6px;background:var(--red-light);color:var(--red);border-radius:20px;margin-left:6px;font-weight:500}
+.warn-pill{font-size:10px;padding:1px 6px;background:var(--red-light);color:var(--red);border-radius:20px;margin-left:6px;font-weight:500;display:inline-block;vertical-align:middle}
 /* ── extras ── */
 .extras-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .ext-sec{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);padding:16px}
@@ -196,6 +198,44 @@ button{cursor:pointer}
 .ext-del:hover{background:var(--red-light);color:var(--red);border-color:var(--red)}
 .add-ext-btn{display:flex;align-items:center;gap:5px;padding:6px 10px;font-size:12px;border:1px dashed var(--border2);border-radius:6px;background:none;color:var(--text3);margin-top:6px;transition:all .15s;width:100%}
 .add-ext-btn:hover{border-color:var(--text2);color:var(--text)}
+/* ── savings goals ── */
+.sg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:14px}
+.sg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;box-shadow:var(--sh)}
+.sg-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.sg-due{font-size:11px;color:var(--text3);margin-bottom:10px;font-family:var(--mono)}
+.sg-amounts{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px}
+.sg-target{font-size:22px;font-weight:700;font-family:var(--mono);letter-spacing:-.5px}
+.sg-perpay-lbl{font-size:11px;color:var(--text3);text-align:right;display:block}
+.sg-perpay-val{font-size:17px;font-weight:600;font-family:var(--mono);display:block;color:var(--amber);text-align:right}
+.sg-pb{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.sg-pb-fill{height:100%;border-radius:4px;transition:width .5s}
+.sg-meta{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text3);margin-bottom:10px}
+.sg-pill{padding:2px 8px;border-radius:20px;font-weight:500;font-size:10px}
+.sg-actions{display:flex;gap:6px}
+.sg-btn{flex:1;padding:5px 8px;font-size:11px;border:1px solid var(--border);border-radius:6px;background:none;color:var(--text2);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px}
+.sg-btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.sg-btn.danger:hover{border-color:var(--red);color:var(--red);background:var(--red-light)}
+.sg-form{background:var(--surface2);border:1px solid var(--blue-mid);border-radius:var(--rl);padding:16px;margin-bottom:14px;box-shadow:0 0 0 3px rgba(55,138,221,.08)}
+.sg-form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.sg-fl label{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px}
+.sg-fl input,.sg-fl select{width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);outline:none}
+.sg-fl input:focus,.sg-fl select:focus{border-color:var(--blue-mid)}
+.add-sg-btn{display:flex;align-items:center;gap:8px;padding:11px 16px;border:1.5px dashed var(--border2);border-radius:var(--rl);background:none;color:var(--text3);font-size:13px;width:100%;cursor:pointer;transition:all .15s;justify-content:center}
+.add-sg-btn:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-light)}
+/* chart timeframe */
+.tf-bar{display:flex;gap:4px;margin-bottom:10px}
+.tf-pill{padding:4px 11px;font-size:11px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text3);cursor:pointer;transition:all .15s;font-weight:500}
+.tf-pill:hover{border-color:var(--border2);color:var(--text)}
+.tf-pill.active{background:var(--text);color:#fff;border-color:var(--text)}
+/* app name edit */
+.name-edit-wrap{display:flex;align-items:center;gap:8px}
+.name-edit-in{padding:6px 10px;font-size:14px;font-weight:600;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);outline:none;flex:1}
+.name-edit-in:focus{border-color:var(--blue-mid)}
+/* custom recurring */
+.cr-row{display:grid;grid-template-columns:1fr 90px 110px 90px 30px;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.cr-row:last-child{border-bottom:none}
+.cr-in{padding:5px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:100%;outline:none}
+.cr-in:focus{border-color:var(--blue-mid)}
 /* ── recurring rates editor ── */
 .rates-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
 .rate-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px}
@@ -247,12 +287,8 @@ button{cursor:pointer}
 
 <aside class="sb">
   <div class="sb-logo">
-    <div class="sb-logo-name">My Finance</div>
-    <div class="sb-logo-sub">Nic's Dashboard</div>
-  </div>
-  <div class="sb-bank">
-    <div class="sb-dot"></div>
-    <div><div class="sb-bank-name">TD Canada Trust</div><div class="sb-bank-num">•••• 4821</div></div>
+    <div class="sb-logo-name" id="sb-logo-name" onclick="editAppName()" title="Click to edit" style="cursor:pointer">My Finance</div>
+    <div class="sb-logo-sub" id="sb-logo-sub" onclick="editAppSub()" title="Click to edit" style="cursor:pointer">Nic's Dashboard</div>
   </div>
   <nav class="sb-nav">
     <button class="sni active" onclick="nav('calendar')"><i class="ti ti-calendar"></i><span>Calendar</span></button>
@@ -265,18 +301,17 @@ button{cursor:pointer}
     <div class="sb-bal-card">
       <div class="sbc-lbl">Actual Balance</div>
       <div class="sbc-val" id="sb-bal">—</div>
-      <div class="sbc-sub">TD •••• 4821</div>
       <div style="height:1px;background:rgba(255,255,255,.15);margin:10px 0"></div>
       <div class="sbc-lbl">Projected Closing</div>
       <div class="sbc-val" id="sb-proj" style="font-size:16px">—</div>
-      <div class="sbc-sub" id="sb-proj-label">May – Dec 2026</div>
+      <div class="sbc-sub" id="sb-proj-label"></div>
     </div>
   </div>
 </aside>
 
 <main class="main">
   <div class="topbar">
-    <div><div class="tb-title" id="pg-title">Calendar</div><div class="tb-date">Monday, May 25, 2026</div></div>
+    <div><div class="tb-title" id="pg-title">Calendar</div><div class="tb-date" id="tb-date"></div></div>
     <div style="display:flex;align-items:center;gap:10px">
       <!-- undo/redo -->
       <div class="ur-wrap">
@@ -307,7 +342,7 @@ button{cursor:pointer}
           <input type="file" id="restore-input" accept=".json" style="display:none" onchange="restoreJSON(this)">
           <div class="export-menu-sep"></div>
           <div style="padding:6px 14px 4px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:600">Cloud sync</div>
-          <button class="export-menu-item" onclick="showFirebasePanel()"><i class="ti ti-cloud" id="fb-icon" style="color:#F5A623"></i><span id="fb-menu-label">Firebase sync</span></button>
+          <button class="export-menu-item" onclick="showGDPanel()"><i class="ti ti-brand-google-drive" id="gd-menu-icon" style="color:#4285F4"></i><span id="gd-menu-label">Google Drive sync</span></button>
           <div class="export-menu-sep"></div>
           <button class="export-menu-item" onclick="clearSaved()" style="color:var(--red)"><i class="ti ti-trash" style="color:var(--red)"></i>Reset all data</button>
         </div>
@@ -329,6 +364,7 @@ button{cursor:pointer}
         <div class="leg"><div class="leg-dot" style="background:#888780"></div>Gas</div>
         <div class="leg"><div class="leg-dot" style="background:#D4537E"></div>Phone</div>
         <div class="leg"><div class="leg-dot" style="background:#1D9E75"></div>Car wash</div>
+        <div class="leg"><div class="leg-dot" style="background:#F59E0B"></div>🚩 Savings goal</div>
         <div class="leg"><div class="leg-dot" style="background:#7F77DD"></div>Manual</div>
       </div>
       <div class="cg" id="cal-hdr"></div>
@@ -349,6 +385,13 @@ button{cursor:pointer}
       <div class="bal-wrap">
         <div class="card">
           <div class="card-title"><i class="ti ti-chart-bar"></i><span id="bal-chart-title">Balance projection</span></div>
+          <div class="tf-bar" id="tf-bar">
+            <button class="tf-pill active" onclick="setChartView('all')">All</button>
+            <button class="tf-pill" onclick="setChartView('3m')">3M</button>
+            <button class="tf-pill" onclick="setChartView('6m')">6M</button>
+            <button class="tf-pill" onclick="setChartView('1y')">1Y</button>
+            <button class="tf-pill" onclick="setChartView('2y')">2Y</button>
+          </div>
           <div class="bars" id="bal-bars"></div>
           <div style="display:flex;justify-content:space-between;padding:0 2px;margin-top:2px" id="bal-mo-row"></div>
         </div>
@@ -393,6 +436,21 @@ button{cursor:pointer}
     <!-- SAVING PLAN -->
     <div class="sec" id="sec-saving">
       <div class="sv-row" id="sv-row"></div>
+
+      <!-- SAVINGS GOALS -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="card-title" style="margin-bottom:0"><i class="ti ti-target"></i>Savings goals</div>
+          <button class="btn btn-sm" onclick="addSavingsGoal()"><i class="ti ti-plus" style="font-size:13px"></i>Add goal</button>
+        </div>
+        <div id="sg-form-wrap"></div>
+        <div class="sg-cards" id="sg-cards"></div>
+        <div id="sg-empty" style="text-align:center;padding:1.5rem;color:var(--text3);font-size:13px;display:none">
+          <i class="ti ti-target" style="font-size:28px;display:block;margin-bottom:8px;opacity:.3"></i>
+          No savings goals yet — click <strong>Add goal</strong> to create one
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:20px">
         <div class="card-title"><i class="ti ti-table"></i>Monthly cashflow + running balance</div>
         <table class="cf-tbl">
@@ -416,15 +474,8 @@ button{cursor:pointer}
 
     <!-- ACCOUNT -->
     <div class="sec" id="sec-account">
-      <div class="plaid-banner"><i class="ti ti-circle-check" style="font-size:17px;flex-shrink:0"></i><div><strong>Connected via Plaid sandbox</strong> — TD Canada Trust linked. Sign up at plaid.com to connect your real bank.</div></div>
 
       <!-- Recurring rates editor -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-title"><i class="ti ti-adjustments-horizontal"></i>Edit recurring rates — changes apply everywhere</div>
-        <div class="rates-grid" id="rates-grid"></div>
-        <div style="font-size:12px;color:var(--text3);margin-top:4px"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>These are the base rates used for projections. Individual transactions can also be edited in the Transactions tab.</div>
-      </div>
-
       <div id="account-content"></div>
     </div>
   </div>
@@ -432,12 +483,36 @@ button{cursor:pointer}
 </div>
 
 <script>
-const TODAY=new Date(2026,4,25);
+// timezone-aware today — updates on navigation
+let userTimezone=Intl.DateTimeFormat().resolvedOptions().timeZone||'America/Vancouver';
+function getRealToday(){
+  try{
+    const parts=new Intl.DateTimeFormat('en-CA',{timeZone:userTimezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+    const y=+parts.find(p=>p.type==='year').value;
+    const m=+parts.find(p=>p.type==='month').value-1;
+    const d=+parts.find(p=>p.type==='day').value;
+    return new Date(y,m,d);
+  }catch(e){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate());}
+}
+let TODAY=getRealToday();
 const PAY_ANCHOR=new Date(2026,4,8);
 const GYM_ANCHOR=new Date(2026,4,13);
 const ICBC_DATE=new Date(2026,5,26);
 
 // ── editable recurring rates ──────────────────────────────────────────────
+// app identity
+let appName='My Finance';
+let appSub="Nic's Dashboard";
+let todayImage=null; // base64 data URL for today's calendar marker
+
+// chart timeframe: 'all' | '3m' | '6m' | '1y' | '2y'
+let chartView='all';
+
+// custom recurring items (up to 30 total including built-ins)
+// structure: {id, name, amount, freq, day, anchor, icon, cat}
+let customRecurring=[];
+let crNextId=1;
+
 let R={
   salary:1509.88,
   rent:2150,
@@ -450,12 +525,15 @@ let R={
 };
 
 let openingBalance=4250;
-let vY=2026,vM=4;
+let vY=TODAY.getFullYear(),vM=TODAY.getMonth();
 // global projection period — shared across all tabs
 let projFY=2026,projFM=4,projTY=2026,projTM=11;
 let txFilter='all';
 let nextId=1;
 let extras={income:[],expense:[]};
+let savingsGoals=[]; // [{id,name,target,saved,dueDate,color}]
+let sgNextId=1;
+let sgEditId=null; // id of goal currently being edited (null = adding new)
 
 // ── UNDO / REDO ENGINE ────────────────────────────────────────────────────
 const MAX_HISTORY=10;
@@ -528,6 +606,11 @@ function scheduleSave(){
   if(lbl)lbl.textContent='Unsaved';
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>persistSave(),1200);
+  // Google Drive auto-save (3s debounce, only if signed in and enabled)
+  if(typeof gdAutoSave!=='undefined'&&gdAutoSave&&typeof gdToken!=='undefined'&&gdToken){
+    clearTimeout(window._gdAutoTimer);
+    window._gdAutoTimer=setTimeout(()=>gdSave(),3000);
+  }
 }
 
 function persistSave(){
@@ -645,8 +728,8 @@ function fmt(n,sign=false){
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-const CI={'Salary':'ti-cash','Rent':'ti-home','Gym':'ti-barbell','WiFi':'ti-wifi','Gas':'ti-gas-station','Car Wash':'ti-car','Phone':'ti-phone','ICBC Insurance':'ti-car-crash','Food & Groceries':'ti-shopping-cart','Transport':'ti-bus','Entertainment':'ti-device-tv','Shopping':'ti-tag','Health':'ti-heart','Bills':'ti-receipt','Dining Out':'ti-tools-kitchen-2','Other':'ti-dots'};
-const CC={'Salary':'#185FA5','Rent':'#BA7517','Gym':'#639922','WiFi':'#7F77DD','Gas':'#888780','Car Wash':'#1D9E75','Phone':'#D4537E','ICBC Insurance':'#D85A30','Food & Groceries':'#378ADD','Transport':'#888780','Entertainment':'#7F77DD','Shopping':'#D4537E','Health':'#1D9E75','Bills':'#BA7517','Dining Out':'#D85A30','Other':'#888780'};
+const CI={'Salary':'ti-cash','Rent':'ti-home','Gym':'ti-barbell','WiFi':'ti-wifi','Gas':'ti-gas-station','Car Wash':'ti-car','Phone':'ti-phone','ICBC Insurance':'ti-car-crash','Food & Groceries':'ti-shopping-cart','Transport':'ti-bus','Entertainment':'ti-device-tv','Shopping':'ti-tag','Health':'ti-heart','Bills':'ti-receipt','Dining Out':'ti-tools-kitchen-2','Savings Goal':'ti-target','Other':'ti-dots'};
+const CC={'Salary':'#185FA5','Rent':'#BA7517','Gym':'#639922','WiFi':'#7F77DD','Gas':'#888780','Car Wash':'#1D9E75','Phone':'#D4537E','ICBC Insurance':'#D85A30','Food & Groceries':'#378ADD','Transport':'#888780','Entertainment':'#7F77DD','Shopping':'#D4537E','Health':'#1D9E75','Bills':'#BA7517','Dining Out':'#D85A30','Savings Goal':'#F59E0B','Other':'#888780'};
 
 // ── seed recurring transactions for current month only ───────────────────
 let transactions=[];
@@ -671,7 +754,198 @@ function seedMonth(y,m){
 seedMonth(2026,4);
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────
+// ── SAVINGS GOALS ────────────────────────────────────────────────────────
+const SG_COLORS=[
+  {name:'Amber',  val:'#F59E0B',bg:'#FEF3C7'},
+  {name:'Blue',   val:'#3B82F6',bg:'#EFF6FF'},
+  {name:'Green',  val:'#10B981',bg:'#ECFDF5'},
+  {name:'Red',    val:'#EF4444',bg:'#FEF2F2'},
+  {name:'Purple', val:'#8B5CF6',bg:'#F5F3FF'},
+  {name:'Pink',   val:'#EC4899',bg:'#FDF2F8'},
+  {name:'Teal',   val:'#14B8A6',bg:'#F0FDFA'},
+  {name:'Orange', val:'#F97316',bg:'#FFF7ED'},
+];
+
+function addSavingsGoal(){
+  sgEditId=null;
+  renderSGForm();
+}
+
+function editSavingsGoal(id){
+  sgEditId=id;
+  renderSGForm();
+}
+
+function renderSGForm(){
+  const goal=sgEditId!==null?savingsGoals.find(g=>g.id===sgEditId):null;
+  const wrap=document.getElementById('sg-form-wrap');
+  const colorOpts=SG_COLORS.map(c=>`<option value="${c.val}" ${(goal?goal.color:SG_COLORS[0].val)===c.val?'selected':''}>${c.name}</option>`).join('');
+  wrap.innerHTML=`<div class="sg-form">
+    <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text)">${goal?'Edit goal':'New savings goal'}</div>
+    <div class="sg-form-grid">
+      <div class="sg-fl" style="grid-column:span 2"><label>Goal name</label>
+        <input type="text" id="sg-name" value="${goal?goal.name:''}" placeholder="e.g. ICBC Insurance, Vacation, New Laptop"></div>
+      <div class="sg-fl"><label>Colour</label><select id="sg-color">${colorOpts}</select></div>
+    </div>
+    <div class="sg-form-grid">
+      <div class="sg-fl"><label>Target amount ($)</label>
+        <input type="number" id="sg-target" value="${goal?goal.target:''}" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="sg-fl"><label>Already saved ($)</label>
+        <input type="number" id="sg-saved" value="${goal?goal.saved:0}" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="sg-fl"><label>Due date</label>
+        <input type="date" id="sg-due" value="${goal?goal.dueDate:''}"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="saveSGForm()" style="flex:1;justify-content:center"><i class="ti ti-check" style="font-size:14px"></i>${goal?'Save changes':'Add goal'}</button>
+      <button onclick="cancelSGForm()" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:none;font-size:13px;color:var(--text2);cursor:pointer">Cancel</button>
+    </div>
+  </div>`;
+  document.getElementById('sg-name').focus();
+}
+
+function cancelSGForm(){
+  const w=document.getElementById('sg-form-wrap');if(w)w.innerHTML='';
+  sgEditId=null;
+}
+
+function saveSGForm(){
+  const name=document.getElementById('sg-name').value.trim();
+  const target=parseFloat(document.getElementById('sg-target').value)||0;
+  const saved=parseFloat(document.getElementById('sg-saved').value)||0;
+  const dueDate=document.getElementById('sg-due').value;
+  const color=document.getElementById('sg-color').value;
+  if(!name||target<=0){
+    document.getElementById('sg-name').style.borderColor=!name?'var(--red)':'';
+    document.getElementById('sg-target').style.borderColor=target<=0?'var(--red)':'';
+    return;
+  }
+  if(sgEditId!==null){
+    const g=savingsGoals.find(g=>g.id===sgEditId);
+    if(g){
+      Object.assign(g,{name,target,saved,dueDate,color});
+      syncSGTransaction(g); // update existing transaction
+    }
+  } else {
+    const newGoal={id:sgNextId++,name,target,saved,dueDate,color};
+    savingsGoals.push(newGoal);
+    syncSGTransaction(newGoal); // create transaction
+  }
+  const sgfw=document.getElementById('sg-form-wrap');if(sgfw)sgfw.innerHTML='';
+  sgEditId=null;
+  renderSavingNumbers();
+  renderSGCards();
+  scheduleSave();
+  renderAll();
+}
+
+function deleteSavingsGoal(id){
+  if(!confirm('Delete this savings goal?'))return;
+  // remove linked transaction (only the sg-linked one, not manual edits)
+  transactions=transactions.filter(t=>t.sgId!==id);
+  savingsGoals=savingsGoals.filter(g=>g.id!==id);
+  renderSavingNumbers();renderSGCards();scheduleSave();renderAll();
+}
+
+// sync a savings goal to a single transaction entry on its due date
+function syncSGTransaction(goal){
+  if(!goal.dueDate)return;
+  const due=new Date(goal.dueDate);
+  const remaining=Math.max(0,goal.target-goal.saved);
+  // remove any previous linked transaction for this goal
+  transactions=transactions.filter(t=>t.sgId!==goal.id);
+  if(remaining<=0)return; // goal already met — no transaction needed
+  transactions.push({
+    id:nextId++,
+    desc:'🎯 '+goal.name,
+    amt:remaining,
+    date:due,
+    type:'expense',
+    cat:'Savings Goal',
+    rec:true,   // shows "recurring" pill so user knows it's auto-managed
+    sgId:goal.id  // links back to goal — used to prevent feedback loop
+  });
+}
+
+function updateSGSaved(id,val){
+  const g=savingsGoals.find(g=>g.id===id);
+  if(g){
+    g.saved=Math.max(0,parseFloat(val)||0);
+    syncSGTransaction(g); // update transaction with new remaining amount
+    renderSGCards();
+    renderAll();
+    scheduleSave();
+  }
+}
+
+function renderSGCards(){
+  const wrap=document.getElementById('sg-cards');
+  const empty=document.getElementById('sg-empty');
+  if(!wrap)return;
+  if(!savingsGoals.length){wrap.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+
+  // count pay periods remaining until each due date from today
+  function paysUntil(dueDate){
+    if(!dueDate)return null;
+    const due=new Date(dueDate);
+    if(due<=TODAY)return 0;
+    let count=0,d=new Date(PAY_ANCHOR);
+    // find next pay after today
+    while(d<=TODAY)d=new Date(d.getTime()+14*D);
+    while(d<=due){count++;d=new Date(d.getTime()+14*D);}
+    return count;
+  }
+
+  wrap.innerHTML=savingsGoals.map(g=>{
+    const pct=Math.min(100,g.target>0?(g.saved/g.target*100):0);
+    const remaining=Math.max(0,g.target-g.saved);
+    const pays=paysUntil(g.dueDate);
+    const perPay=pays>0?Math.ceil(remaining/pays):remaining;
+    const colorBg=SG_COLORS.find(c=>c.val===g.color)?.bg||'#FEF3C7';
+    const dueStr=g.dueDate?new Date(g.dueDate).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'No due date';
+    const daysLeft=g.dueDate?Math.ceil((new Date(g.dueDate)-TODAY)/86400000):null;
+    const urgency=daysLeft!==null?(daysLeft<0?'overdue':daysLeft<30?'soon':daysLeft<90?'upcoming':'ahead'):null;
+    const urgencyColor={'overdue':'var(--red)','soon':'var(--coral)','upcoming':'var(--amber)','ahead':'var(--green)'}[urgency]||'var(--text3)';
+    const urgencyBg={'overdue':'var(--red-light)','soon':'#FEF3E2','upcoming':'var(--amber-light)','ahead':'var(--green-light)'}[urgency]||'var(--surface2)';
+    const urgencyLabel={'overdue':'Overdue','soon':daysLeft+'d left','upcoming':daysLeft+'d left','ahead':daysLeft+'d left'}[urgency]||'';
+
+    return`<div class="sg-card" style="background:${colorBg};border-color:${g.color}44">
+      <div class="sg-name"><i class="ti ti-target" style="color:${g.color};font-size:14px"></i>${g.name}</div>
+      <div class="sg-due"><i class="ti ti-calendar" style="font-size:11px;margin-right:3px"></i>${dueStr}
+        ${urgencyLabel?`<span style="margin-left:6px;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:600;background:${urgencyBg};color:${urgencyColor}">${urgencyLabel}</span>`:''}
+      </div>
+      <div class="sg-amounts">
+        <div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Target</div>
+          <div class="sg-target" style="color:${g.color}">${fmt(g.target)}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="sg-perpay-lbl">${pays!==null?`Save/paycheque (${pays} left)`:'Save/paycheque'}</div>
+          <div class="sg-perpay-val" style="color:${g.color}">${pays===0?'Due now!':pays===null?'Set due date':fmt(perPay)}</div>
+        </div>
+      </div>
+      <div class="sg-pb"><div class="sg-pb-fill" style="width:${pct.toFixed(1)}%;background:${g.color}"></div></div>
+      <div class="sg-meta">
+        <span style="font-family:var(--mono)">${fmt(g.saved)} saved of ${fmt(g.target)} (${pct.toFixed(0)}%)</span>
+        <span style="font-family:var(--mono);color:${remaining>0?urgencyColor:'var(--green)'}">
+          ${remaining>0?fmt(remaining)+' to go':'✓ Goal reached!'}
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text3);white-space:nowrap">Saved so far:</label>
+        <input type="number" value="${g.saved}" step="0.01" min="0" style="flex:1;padding:4px 8px;font-size:12px;border:1px solid ${g.color}66;border-radius:6px;background:var(--surface);font-family:var(--mono);outline:none"
+          onblur="updateSGSaved(${g.id},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+      </div>
+      <div class="sg-actions">
+        <button class="sg-btn" onclick="editSavingsGoal(${g.id})"><i class="ti ti-pencil" style="font-size:12px"></i>Edit</button>
+        <button class="sg-btn danger" onclick="deleteSavingsGoal(${g.id})"><i class="ti ti-trash" style="font-size:12px"></i>Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderAll(){
+  updateTopbarDate();
   renderSidebar();renderSummary();renderCal();renderTx();
   if(document.getElementById('sec-balance').classList.contains('active'))renderBalance();
   if(document.getElementById('sec-saving').classList.contains('active'))renderSaving();
@@ -701,7 +975,7 @@ function renderSummary(){
     <div class="sc" style="border-left:3px solid var(--green-mid)">
       <div class="sc-lbl">Actual balance</div>
       <div class="sc-val" style="color:${bal>=0?'var(--blue)':'var(--red)'}">${fmt(bal)}</div>
-      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-building-bank" style="font-size:12px"></i>TD •••• 4821 · manual txns only</div>
+      <div class="sc-sub" style="display:flex;align-items:center;gap:4px"><i class="ti ti-wallet" style="font-size:12px"></i>opening ± manual transactions</div>
     </div>
     <div class="sc" style="border-left:3px solid var(--purple)">
       <div class="sc-lbl">Projected closing</div>
@@ -741,12 +1015,20 @@ function renderCal(){
     const dt=new Date(vY,vM,d);
     const pay=pd.some(x=>isSame(x,dt)),gym=gd.some(x=>isSame(x,dt));
     const rent=d===1,wifi=d===10,wash=d===15,phone=d===20,gas=dt.getDay()===1,icbc=isSame(dt,ICBC_DATE),tod=isSame(dt,TODAY);
-    const manTx=transactions.filter(t=>isSame(t.date,dt)&&!t.rec);
-    const hasManI=manTx.some(t=>t.type==='income'),hasManE=manTx.some(t=>t.type==='expense');
+    const manTx=transactions.filter(t=>isSame(t.date,dt)&&!t.rec&&!t.sgId);
+    const sgTx=transactions.filter(t=>isSame(t.date,dt)&&t.sgId);
+    const hasManI=manTx.some(t=>t.type==='income'),hasManE=manTx.some(t=>t.type==='expense')||sgTx.length>0;
     const hasI=pay||hasManI,hasE=gym||rent||wifi||wash||phone||gas||icbc||hasManE;
     let cls='cc'+(tod?' today':'')+(hasI&&hasE?' both':hasI?' pay':hasE?' expense':'');
-    const b=(pay?'<span class="bdg b-pay">Pay</span>':'')+(rent?'<span class="bdg b-rent">Rent</span>':'')+(gym?'<span class="bdg b-gym">Gym</span>':'')+(wifi?'<span class="bdg b-wifi">WiFi</span>':'')+(gas?'<span class="bdg b-gas">Gas</span>':'')+(wash?'<span class="bdg b-wash">Wash</span>':'')+(phone?'<span class="bdg b-phone">Phone</span>':'')+(icbc?'<span class="bdg b-icbc">ICBC</span>':'')+(manTx.length?`<span class="bdg b-manual">+${manTx.length}</span>`:'');
-    html+=`<div class="${cls}" onclick="showDay(${d})"><span class="dn">${d}</span>${b}</div>`;
+    const sgBadges=sgTx.map(t=>{
+      const goal=savingsGoals.find(g=>g.id===t.sgId);
+      const color=goal?.color||'#F59E0B';
+      const name=goal?goal.name.slice(0,13):'Goal';
+      return`<div style="display:flex;align-items:center;gap:3px;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;margin-top:3px;color:#fff;background:${color};line-height:1.4;overflow:hidden;white-space:nowrap;max-width:100%">🚩 ${name}</div>`;
+    }).join('');
+    const b=(pay?'<span class="bdg b-pay">Pay</span>':'')+(rent?'<span class="bdg b-rent">Rent</span>':'')+(gym?'<span class="bdg b-gym">Gym</span>':'')+(wifi?'<span class="bdg b-wifi">WiFi</span>':'')+(gas?'<span class="bdg b-gas">Gas</span>':'')+(wash?'<span class="bdg b-wash">Wash</span>':'')+(phone?'<span class="bdg b-phone">Phone</span>':'')+(icbc?'<span class="bdg b-icbc">ICBC</span>':'')+sgBadges+(manTx.length?`<span class="bdg b-manual">+${manTx.length}</span>`:'');
+    const todayMarker=tod&&todayImage?`<img src="${todayImage}" class="today-img" alt="today">`:'';
+    html+=`<div class="${cls}" onclick="showDay(${d})">${todayMarker}<span class="dn">${d}</span>${b}</div>`;
   }
   for(let d=1;d<=42-first-dim;d++)html+=`<div class="cc other"><span class="dn">${d}</span></div>`;
   document.getElementById('cal-body').innerHTML=html;
@@ -762,40 +1044,97 @@ function showDay(d){
   if(d===20)ev.push({l:'Phone Bill',a:R.phone,t:'expense',ic:'ti-phone'});
   if(dt.getDay()===1)ev.push({l:'Gas Fill-up',a:R.gas,t:'expense',ic:'ti-gas-station'});
   if(isSame(dt,ICBC_DATE))ev.push({l:'ICBC Insurance',a:R.icbc,t:'expense',ic:'ti-car-crash'});
-  transactions.filter(t=>isSame(t.date,dt)&&!t.rec).forEach(t=>ev.push({l:t.desc,a:t.amt,t:t.type,ic:CI[t.cat]||'ti-dots',manual:true,id:t.id}));
+  transactions.filter(t=>isSame(t.date,dt)&&!t.rec&&!t.sgId).forEach(t=>ev.push({l:t.desc,a:t.amt,t:t.type,ic:CI[t.cat]||'ti-dots',manual:true,id:t.id}));
+  // savings goal transactions
+  transactions.filter(t=>isSame(t.date,dt)&&t.sgId).forEach(t=>{
+    const goal=savingsGoals.find(g=>g.id===t.sgId);
+    const color=goal?.color||'#F59E0B';
+    ev.push({l:(goal?goal.name:'Savings Goal'),a:t.amt,t:t.type,ic:'ti-flag-3-filled',goal:true,color});
+  });
   if(!ev.length){document.getElementById('day-detail').innerHTML='';return;}
-  const rows=ev.map(e=>`<tr><td class="bdt-lbl"><i class="ti ${e.ic}"></i>${e.l}${e.manual?'<span style="font-size:10px;padding:1px 6px;background:var(--blue-light);color:var(--blue);border-radius:20px;margin-left:6px">manual</span>':''}</td><td class="${e.t==='income'?'bdt-in':'bdt-out'}">${e.t==='income'?'+':'-'}${fmt(e.a)}</td></tr>`).join('');
+  const rows=ev.map(e=>`<tr>
+    <td class="bdt-lbl">
+      <span style="font-size:15px;line-height:1;${e.goal?'':'display:none'}">🚩</span>
+      <i class="ti ${e.ic}" style="${e.goal?'display:none':''}color:${e.goal?e.color:''};font-size:14px"></i>
+      ${e.l}
+      ${e.goal?`<span style="font-size:10px;padding:1px 6px;background:#FEF3C7;color:#92400E;border-radius:20px;margin-left:6px;font-weight:500">🚩 savings goal</span>`:''}
+      ${e.manual?'<span style="font-size:10px;padding:1px 6px;background:var(--blue-light);color:var(--blue);border-radius:20px;margin-left:6px">manual</span>':''}
+    </td>
+    <td class="${e.t==='income'?'bdt-in':'bdt-out'}">${e.t==='income'?'+':'-'}${fmt(e.a)}</td>
+  </tr>`).join('');
   document.getElementById('day-detail').innerHTML=`<div class="card"><div class="card-title"><i class="ti ti-calendar-event"></i>${dt.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'})}</div><table class="bdt">${rows}</table></div>`;
 }
 
 // ── BALANCE ───────────────────────────────────────────────────────────────
+function setChartView(v){
+  chartView=v;
+  document.querySelectorAll('.tf-pill').forEach(b=>{
+    const lbl=b.textContent.trim();
+    b.classList.toggle('active',(v==='all'&&lbl==='All')||(lbl===v.toUpperCase()));
+  });
+  renderBalance();
+}
+
 function renderBalance(){
   const fv=document.getElementById('bal-from').value,tv=document.getElementById('bal-to').value;
   if(!fv||!tv)return;
   const [fY,fM]=[+fv.split('-')[0],+fv.split('-')[1]-1];
   const [tY,tM]=[+tv.split('-')[0],+tv.split('-')[1]-1];
   if(fY>tY||(fY===tY&&fM>tM)){alert('Start must be before end');return;}
-  // save to global so all other tabs use same period
   projFY=fY;projFM=fM;projTY=tY;projTM=tM;
-  // re-render sidebar, summary and saving so all projected values update
-  renderSidebar();
-  renderSummary();
+  renderSidebar();renderSummary();
   if(document.getElementById('sec-saving').classList.contains('active'))renderSaving();
   let y=fY,m=fM;
   while(y<tY||(y===tY&&m<=tM)){seedMonth(y,m);m++;if(m>11){m=0;y++;}}
-  const bals=runBals(fY,fM,tY,tM);
-  const maxA=Math.max(...bals.map(b=>Math.abs(b.bal)),1);
-  document.getElementById('bal-chart-title').textContent=`Balance projection (${MS[fM]} ${fY} – ${MS[tM]} ${tY})`;
-  document.getElementById('bal-bars').innerHTML=bals.map(b=>{
+  const allBals=runBals(fY,fM,tY,tM); // one entry per month
+
+  // granularity: how many months each bar represents
+  // 'all' = 1 month/bar, '3m' = 3 months/bar, '6m' = 6, '1y' = 12, '2y' = 24
+  const grainMap={'all':1,'3m':3,'6m':6,'1y':12,'2y':24};
+  const grain=grainMap[chartView]||1;
+
+  // group allBals into buckets of `grain` months, take last entry of each bucket
+  let showBals=[];
+  for(let i=grain-1;i<allBals.length;i+=grain){
+    showBals.push(allBals[i]);
+  }
+  // always include the very last month if not already included
+  const lastBal=allBals[allBals.length-1];
+  if(showBals.length===0||showBals[showBals.length-1]!==lastBal){
+    showBals.push(lastBal);
+  }
+
+  // build labels based on grain
+  function barLabel(b){
+    if(grain===1) return `${MS[b.m]}${b.y!==fY?" '"+String(b.y).slice(2):''}`;
+    if(grain<=6)  return `${MS[b.m]} '${String(b.y).slice(2)}`;
+    return String(b.y); // yearly and 2-yearly: just year
+  }
+
+  const maxA=Math.max(...showBals.map(b=>Math.abs(b.bal)),1);
+  const grainLabel={'all':'monthly','3m':'quarterly','6m':'half-yearly','1y':'yearly','2y':'2-yearly'}[chartView]||'monthly';
+  const bct=document.getElementById('bal-chart-title');if(bct)bct.textContent=`Balance projection (${MS[fM]} ${fY} – ${MS[tM]} ${tY}) · ${grainLabel}`;
+
+  const bbEl=document.getElementById('bal-bars');if(!bbEl)return;
+  bbEl.innerHTML=showBals.map((b,i)=>{
     const h=Math.round(Math.abs(b.bal)/maxA*130)+10;
-    return`<div class="bw"><div class="bar-val" style="color:${b.bal>=0?'var(--blue)':'var(--red)'}">${b.bal>=0?'':'-'}$${Math.abs(Math.round(b.bal)).toLocaleString()}</div><div class="bar ${b.bal>=0?'pos':'neg'}" style="height:${h}px"></div></div>`;
+    const isYearly=grain>=12;
+    return`<div class="bw">
+      <div class="bar-val" style="color:${b.bal>=0?'var(--blue)':'var(--red)'};">${b.bal>=0?'':'-'}$${Math.abs(Math.round(b.bal)).toLocaleString()}</div>
+      <div class="bar ${b.bal>=0?'pos':'neg'}" style="height:${h}px;position:relative">
+        ${isYearly?`<span style="position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:9px;color:#fff;font-weight:600;opacity:.85">${barLabel(b)}</span>`:''}
+      </div>
+    </div>`;
   }).join('');
-  document.getElementById('bal-mo-row').innerHTML=bals.map(b=>`<span style="font-size:9px;color:var(--text3);flex:1;text-align:center">${MS[b.m]} ${b.y!==fY?b.y:''}</span>`).join('');
+
+  // month/quarter labels below bars (hidden for yearly since label is inside bar)
+  const bmr=document.getElementById('bal-mo-row');if(bmr)bmr.innerHTML=grain>=12?'':showBals.map(b=>`<span style="font-size:9px;color:var(--text3);flex:1;text-align:center">${barLabel(b)}</span>`).join('');
   renderBreakdown();
 }
 
+
 function renderBreakdown(){
-  document.getElementById('bdt-title').textContent=MN[vM]+' '+vY+' breakdown';
+  const bdtTitle=document.getElementById('bdt-title');if(bdtTitle)bdtTitle.textContent=MN[vM]+' '+vY+' breakdown';
   seedMonth(vY,vM);
   const pc=payDates(vY,vM).length,gc=gymDates(vY,vM).length,mo=mondays(vY,vM);
   const mI=manualInc(vY,vM),mE=manualExp(vY,vM);
@@ -814,7 +1153,8 @@ function renderBreakdown(){
   if(extraExp()>0)rows.push(['ti-minus','Extra expenses',extraExp(),'out']);
   if(mI>0)rows.push(['ti-plus','Manual income',mI,'in']);
   if(mE>0)rows.push(['ti-minus','Manual expenses',mE,'out']);
-  document.getElementById('bdt').innerHTML=rows.map(([ic,l,a,t])=>`<tr><td class="bdt-lbl"><i class="ti ${ic}"></i>${l}</td><td class="${t==='in'?'bdt-in':'bdt-out'}">${t==='in'?'+':'-'}${fmt(a)}</td></tr>`).join('')+`<tr><td style="font-weight:600;padding-top:12px">Net this month</td><td class="${net>=0?'bdt-np':'bdt-nn'}" style="padding-top:12px">${fmt(net,true)}</td></tr>`;
+  const bdtEl=document.getElementById('bdt');if(!bdtEl)return;
+  bdtEl.innerHTML=rows.map(([ic,l,a,t])=>`<tr><td class="bdt-lbl"><i class="ti ${ic}"></i>${l}</td><td class="${t==='in'?'bdt-in':'bdt-out'}">${t==='in'?'+':'-'}${fmt(a)}</td></tr>`).join('')+`<tr><td style="font-weight:600;padding-top:12px">Net this month</td><td class="${net>=0?'bdt-np':'bdt-nn'}" style="padding-top:12px">${fmt(net,true)}</td></tr>`;
 }
 
 // ── TRANSACTIONS ──────────────────────────────────────────────────────────
@@ -831,7 +1171,9 @@ function renderTx(){
     return;
   }
   document.getElementById('tx-list').innerHTML=list.map(t=>{
-    const icon=CI[t.cat]||'ti-dots',color=CC[t.cat]||'#888';
+    const icon=t.sgId?'ti-target':(CI[t.cat]||'ti-dots');
+    const goalColor=t.sgId?savingsGoals.find(g=>g.id===t.sgId)?.color:null;
+    const color=goalColor||(CC[t.cat]||'#888');
     return`<div class="txi" id="tr-${t.id}">
       <div class="tx-ico" style="background:${color}18;color:${color}"><i class="ti ${icon}"></i></div>
       <div class="tx-meta">
@@ -839,7 +1181,7 @@ function renderTx(){
         <div class="tx-pills">
           <span class="tx-dp">${t.date.toLocaleDateString('en-CA',{month:'short',day:'numeric'})}</span>
           <span class="tx-cp">${t.cat}</span>
-          ${t.rec?'<span class="tx-rp"><i class="ti ti-refresh" style="font-size:10px;margin-right:2px"></i>recurring</span>':''}
+          ${t.sgId?`<span class="tx-rp" style="background:#FEF3C7;color:#92400E">🚩 savings goal</span>`:t.rec?'<span class="tx-rp"><i class="ti ti-refresh" style="font-size:10px;margin-right:2px"></i>recurring</span>':''}
         </div>
       </div>
       <div class="tx-right">
@@ -901,29 +1243,39 @@ function renderSavingNumbers(){
   let sy=projFY,sm=projFM;
   while(sy<projTY||(sy===projTY&&sm<=projTM)){seedMonth(sy,sm);sm++;if(sm>11){sm=0;sy++;}}
   const bals=runBals(projFY,projFM,projTY,projTM);
-  const icbcPP=Math.ceil(R.icbc/4);
   const worst=Math.min(...bals.map(b=>b.bal));
   const projNet=bals[bals.length-1].bal-openingBalance;
   const totalInc=bals.reduce((a,b)=>a+mInc(b.y,b.m),0);
   const projLabel=`${MS[projFM]} ${projFY}–${MS[projTM]} ${projTY}`;
   const svRow=document.getElementById('sv-row');
   if(svRow)svRow.innerHTML=`
-    <div class="svc"><div class="svc-lbl">ICBC save/paycheque</div><div class="svc-val" style="color:var(--amber)">${fmt(icbcPP)}</div><div class="svc-sub">Set aside each pay for Jun 26</div>
-      <div class="prog"><div class="prog-lbr"><span>Est. saved</span><span>${fmt(Math.min(openingBalance*.3,R.icbc))} / ${fmt(R.icbc)}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,openingBalance*.3/R.icbc*100).toFixed(0)}%;background:var(--amber)"></div></div></div>
-    </div>
-    <div class="svc"><div class="svc-lbl">Lowest projected balance</div><div class="svc-val" style="color:${worst>=0?'var(--blue)':'var(--red)'}">${fmt(worst)}</div><div class="svc-sub">${worst<0?'Deficit — save ahead!':'Healthy buffer'}</div></div>
+    <div class="svc"><div class="svc-lbl">Lowest projected balance</div><div class="svc-val" style="color:${worst>=0?'var(--blue)':'var(--red)'}">${fmt(worst)}</div><div class="svc-sub">${worst<0?'⚠ Deficit month ahead':'✓ Healthy buffer'}</div></div>
     <div class="svc"><div class="svc-lbl">Net change ${projLabel}</div><div class="svc-val" style="color:${projNet>=0?'var(--blue)':'var(--red)'}">${fmt(projNet,true)}</div><div class="svc-sub">Change in bank balance</div></div>
-    <div class="svc"><div class="svc-lbl">Total income ${projLabel}</div><div class="svc-val" style="color:var(--blue)">${fmt(totalInc)}</div><div class="svc-sub">All pay periods</div></div>`;
+    <div class="svc"><div class="svc-lbl">Total income ${projLabel}</div><div class="svc-val" style="color:var(--blue)">${fmt(totalInc)}</div><div class="svc-sub">All pay periods</div></div>
+    <div class="svc"><div class="svc-lbl">Active savings goals</div><div class="svc-val" style="color:var(--amber)">${savingsGoals.length}</div><div class="svc-sub">${savingsGoals.length?'See goals below':'Add a goal below'}</div></div>`;
   const moN=['May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const cfBody=document.getElementById('cf-body');
-  if(cfBody)cfBody.innerHTML=bals.map((b,i)=>{
+  if(cfBody)cfBody.innerHTML=bals.map((b)=>{
     const y=b.y,m=b.m,inc=mInc(y,m),exp=mExp(y,m),net=inc-exp;
-    return`<tr><td class="cf-mo">${MS[m]} ${b.y}${m===ICBC_DATE.getMonth()&&y===ICBC_DATE.getFullYear()?'<span class="warn-pill">ICBC</span>':''}</td><td class="cf-in">+${fmt(inc)}</td><td class="cf-out">-${fmt(exp)}</td><td class="${net>=0?'cf-np':'cf-nn'}">${fmt(net,true)}</td><td class="cf-bal" style="color:${b.bal>=0?'var(--blue)':'var(--red)'}">${fmt(b.bal)}</td></tr>`;
+    // find savings goals due this month AND within the projection period
+    const monthGoals=savingsGoals.filter(g=>{
+      if(!g.dueDate)return false;
+      const due=new Date(g.dueDate);
+      return due.getFullYear()===y&&due.getMonth()===m;
+    });
+    const pills=monthGoals.map(g=>{
+      const color=g.color||'var(--red)';
+      const bg=SG_COLORS.find(c=>c.val===g.color)?.bg||'var(--red-light)';
+      const shortName=g.name.length>12?g.name.slice(0,11)+'…':g.name;
+      return`<span class="warn-pill" style="background:${bg};color:${color};border:1px solid ${color}44">${shortName}</span>`;
+    }).join('');
+    return`<tr><td class="cf-mo">${MS[m]} ${y}${pills}</td><td class="cf-in">+${fmt(inc)}</td><td class="cf-out">-${fmt(exp)}</td><td class="${net>=0?'cf-np':'cf-nn'}">${fmt(net,true)}</td><td class="cf-bal" style="color:${b.bal>=0?'var(--blue)':'var(--red)'}">${fmt(b.bal)}</td></tr>`;
   }).join('');
 }
 
 function renderSaving(){
   renderSavingNumbers();
+  renderSGCards();
   renderExtras();
 }
 
@@ -1049,56 +1401,245 @@ function renderAccount(){
     {key:'carwash',label:'Car Wash',icon:'ti-car',note:'Monthly on the 15th'},
     {key:'icbc',label:'ICBC Insurance',icon:'ti-car-crash',note:'One-time Jun 26'},
   ];
-  document.getElementById('rates-grid').innerHTML=rateItems.map(it=>`
-    <div class="rate-card">
-      <div class="rate-lbl"><i class="ti ${it.icon}"></i>${it.label}</div>
-      <div class="rate-row">
-        <input class="rate-in" type="number" value="${R[it.key].toFixed(2)}" step="0.01" min="0" id="rate-${it.key}" onchange="updateRate('${it.key}',this.value)">
-      </div>
-      <div class="rate-note">${it.note}</div>
-    </div>`).join('');
 
-  const bal=curBal();
-  document.getElementById('account-content').innerHTML=`
-    <div class="acct-card">
-      <div class="acct-hdr"><div class="acct-ico"><i class="ti ti-building-bank"></i></div><div><div class="acct-name">TD Canada Trust</div><div class="acct-type">Chequing — •••• 4821</div></div></div>
-      <div class="acct-bal" style="color:${bal>=0?'var(--blue)':'var(--red)'}">${fmt(bal)}</div>
-      <div class="acct-meta">
-        <div class="acct-mi">Available: <span>${fmt(bal)}</span></div>
-        <div class="acct-mi">Opening: <span>${fmt(openingBalance)}</span></div>
-        <div class="acct-mi">Status: <span style="color:var(--green-mid)">Connected</span></div>
+  // ── App identity ──
+  const tzOptions=[
+    {group:'Canada',zones:['America/Vancouver','America/Edmonton','America/Regina','America/Winnipeg','America/Toronto','America/Halifax','America/St_Johns']},
+    {group:'USA',zones:['America/Los_Angeles','America/Denver','America/Chicago','America/New_York','America/Anchorage','Pacific/Honolulu']},
+    {group:'Europe',zones:['Europe/London','Europe/Paris','Europe/Berlin','Europe/Rome','Europe/Madrid','Europe/Amsterdam','Europe/Stockholm']},
+    {group:'Asia',zones:['Asia/Hong_Kong','Asia/Shanghai','Asia/Tokyo','Asia/Seoul','Asia/Singapore','Asia/Kolkata','Asia/Dubai','Asia/Bangkok']},
+    {group:'Australia/Pacific',zones:['Australia/Sydney','Australia/Melbourne','Australia/Brisbane','Australia/Perth','Pacific/Auckland']},
+    {group:'Other',zones:['UTC','America/Sao_Paulo','Africa/Johannesburg','America/Mexico_City']},
+  ];
+  const tzOptHtml=tzOptions.map(g=>`<optgroup label="${g.group}">${g.zones.map(z=>`<option value="${z}"${z===userTimezone?' selected':''}>${z.replace(/_/g,' ')}</option>`).join('')}</optgroup>`).join('');
+
+  const identityHTML=`<div class="card" style="margin-bottom:16px">
+    <div class="card-title"><i class="ti ti-id"></i>App identity</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">App name</label>
+        <input class="name-edit-in" id="app-name-in" value="${appName}" onblur="saveAppName(this.value)" onkeydown="if(event.key==='Enter')this.blur()">
       </div>
-      <div style="margin-top:16px"><div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.4px">Adjust opening balance</div>
-        <div class="bi-row"><input type="number" id="bal-in" value="${openingBalance}" step="50"><button class="btn" onclick="updateBal()"><i class="ti ti-check" style="font-size:14px"></i>Update</button></div>
+      <div>
+        <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Subtitle</label>
+        <input class="name-edit-in" id="app-sub-in" value="${appSub}" onblur="saveAppSub(this.value)" onkeydown="if(event.key==='Enter')this.blur()">
       </div>
     </div>
-    <div class="acct-card">
-      <div class="acct-hdr"><div class="acct-ico" style="background:var(--green-light);color:var(--teal)"><i class="ti ti-link"></i></div><div><div class="acct-name">Plaid Integration</div><div class="acct-type">Sandbox — ready for production</div></div></div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:14px">Running on Plaid sandbox. To connect your real bank, sign up at plaid.com for a developer account (free), get your <code style="font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:4px">client_id</code> and <code style="font-family:var(--mono);font-size:12px;background:var(--surface2);padding:1px 5px;border-radius:4px">secret</code>, and add a small Node.js backend. Supports TD, RBC, Scotiabank, CIBC, BMO and 12,000+ institutions.</div>
-      <a href="https://dashboard.plaid.com/signup" target="_blank" class="lnk-btn"><i class="ti ti-external-link" style="font-size:13px"></i>Plaid dashboard</a>
-      <a href="https://plaid.com/docs/" target="_blank" class="lnk-btn"><i class="ti ti-book" style="font-size:13px"></i>Plaid docs</a>
-      <a href="https://plaid.com/docs/quickstart/" target="_blank" class="lnk-btn"><i class="ti ti-rocket" style="font-size:13px"></i>Quickstart guide</a>
-    </div>`;
+    <div style="margin-bottom:16px">
+      <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px">Timezone <span style="font-weight:400;text-transform:none">— controls what \"today\" is in the calendar</span></label>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <select id="tz-select" style="padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);outline:none;max-width:320px" onchange="updateTimezone(this.value)">${tzOptHtml}</select>
+        <div style="font-size:12px;color:var(--text3)">Today: <strong id="tz-today-preview" style="color:var(--text)">${TODAY.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</strong></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px">Auto-detected: <em>${Intl.DateTimeFormat().resolvedOptions().timeZone}</em>. Change if today shows the wrong date.</div>
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:8px">Today marker image</label>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="today-img-preview" style="width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid var(--border);flex-shrink:0;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px">
+          ${todayImage?`<img src="${todayImage}" style="width:100%;height:100%;object-fit:cover">`:\`📅\`}
+        </div>
+        <div>
+          <label style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);background:var(--surface)">
+            <i class="ti ti-upload" style="font-size:14px"></i>Upload image
+            <input type="file" accept="image/*" style="display:none" onchange="handleTodayImage(this)">
+          </label>
+          ${todayImage?`<button onclick="removeTodayImage()" style="margin-left:8px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:none;font-size:13px;color:var(--red);cursor:pointer"><i class="ti ti-trash" style="font-size:13px;margin-right:4px"></i>Remove</button>`:''}
+          <div style="font-size:11px;color:var(--text3);margin-top:6px">Square image recommended. Displays as small circle on today&#39;s cell.</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  </div>`;
+
+  // ── Built-in rates ──
+  const ratesHTML=`<div class="card" style="margin-bottom:16px">
+    <div class="card-title"><i class="ti ti-adjustments-horizontal"></i>Built-in recurring rates</div>
+    <div class="rates-grid">${rateItems.map(it=>`
+      <div class="rate-card">
+        <div class="rate-lbl"><i class="ti ${it.icon}"></i>
+          <input value="${it.label}" style="border:none;background:transparent;font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;outline:none;width:100%;cursor:text"
+            onblur="updateRateLabel('${it.key}',this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+        </div>
+        <div class="rate-row"><input class="rate-in" type="number" value="${R[it.key].toFixed(2)}" step="0.01" min="0" id="rate-${it.key}" onchange="updateRate('${it.key}',this.value)"></div>
+        <div class="rate-note">${it.note}</div>
+      </div>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-top:4px"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Click any label above to rename it. Rates apply to all projections.</div>
+  </div>`;
+
+  // ── Custom recurring ──
+  const customHTML=`<div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:0"><i class="ti ti-repeat"></i>Custom recurring items</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="cr-count" style="font-size:12px;color:var(--text3)">${crTotal()} / ${MAX_RECURRING} items</span>
+        <button class="btn btn-sm" onclick="addCR()" ${crTotal()>=MAX_RECURRING?'disabled style="opacity:.4"':''}><i class="ti ti-plus" style="font-size:13px"></i>Add item</button>
+      </div>
+    </div>
+    <div id="cr-wrap"></div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text3)"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>Custom items appear in transactions and projections. Editing a transaction won't affect rates here.</div>
+  </div>`;
+
+  const bal=curBal();
+  const balHTML=`<div class="card" style="margin-bottom:16px">
+    <div class="card-title"><i class="ti ti-wallet"></i>Account balance</div>
+    <div style="font-size:28px;font-weight:700;letter-spacing:-1px;font-family:var(--mono);margin-bottom:12px;color:${bal>=0?'var(--blue)':'var(--red)'}">${fmt(bal)}</div>
+    <div style="display:flex;gap:20px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="font-size:12px;color:var(--text3)">Opening balance: <span style="color:var(--text);font-weight:500">${fmt(openingBalance)}</span></div>
+      <div style="font-size:12px;color:var(--text3)">Manual transactions: <span style="color:var(--text);font-weight:500">${transactions.filter(t=>!t.rec&&!t.sgId).length}</span></div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.4px">Set opening balance</div>
+    <div class="bi-row"><input type="number" id="bal-in" value="${openingBalance}" step="50"><button class="btn" onclick="updateBal()"><i class="ti ti-check" style="font-size:14px"></i>Update</button></div>
+  </div>`;
+
+  const rg=document.getElementById('rates-grid');if(rg)rg.innerHTML=''; // clear if old grid exists
+  document.getElementById('account-content').innerHTML=identityHTML+ratesHTML+customHTML+balHTML;
+  renderCustomRecurring();
 }
 
-function updateRate(key,val){
-  const v=parseFloat(val);
-  if(!isNaN(v)&&v>=0){
-    R[key]=Math.round(v*100)/100;
-    // update all existing recurring transactions of that type so the tx list reflects the change
-    const descMap={salary:'Salary',rent:'Rent',gym:'Gym Membership',wifi:'WiFi Bill',carwash:'Car Wash',phone:'Phone Bill',gas:'Gas Fill-up',icbc:'ICBC Insurance'};
-    const desc=descMap[key];
-    if(desc)transactions.filter(t=>t.rec&&t.desc===desc).forEach(t=>t.amt=R[key]);
-    renderAll();
+// ── APP NAME EDIT ─────────────────────────────────────────────────────────
+function editAppName(){
+  const el=document.getElementById('sb-logo-name');
+  if(!el||el.querySelector('input'))return;
+  el.innerHTML=`<input style="width:120px;font-size:14px;font-weight:600;border:none;border-bottom:1px solid var(--blue-mid);background:transparent;outline:none;color:#fff;padding:0"
+    value="${appName.replace(/"/g,'&quot;')}"
+    onblur="saveAppName(this.value)"
+    onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){document.getElementById('sb-logo-name').textContent=appName;}">`;
+  const inp=el.querySelector('input');inp.focus();inp.select();
+}
+function saveAppName(v){
+  appName=(v||'').trim()||'My Finance';
+  const el=document.getElementById('sb-logo-name');
+  if(el)el.textContent=appName;
+  document.title=appName;
+  const ain=document.getElementById('app-name-in');if(ain)ain.value=appName;
+  scheduleSave();
+}
+function editAppSub(){
+  const el=document.getElementById('sb-logo-sub');
+  if(!el||el.querySelector('input'))return;
+  el.innerHTML=`<input style="width:120px;font-size:11px;border:none;border-bottom:1px solid var(--blue-mid);background:transparent;outline:none;color:var(--text3);padding:0"
+    value="${appSub.replace(/"/g,'&quot;')}"
+    onblur="saveAppSub(this.value)"
+    onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape'){document.getElementById('sb-logo-sub').textContent=appSub;}">`;
+  const inp=el.querySelector('input');inp.focus();inp.select();
+}
+function saveAppSub(v){
+  appSub=(v||'').trim()||'My Dashboard';
+  const el=document.getElementById('sb-logo-sub');
+  if(el)el.textContent=appSub;
+  const ain=document.getElementById('app-sub-in');if(ain)ain.value=appSub;
+  scheduleSave();
+}
+
+// ── TODAY IMAGE ────────────────────────────────────────────────────────────
+function handleTodayImage(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    todayImage=e.target.result;
+    scheduleSave();
+    renderCal(); // refresh calendar immediately
+    renderAccount(); // refresh preview
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+function removeTodayImage(){
+  todayImage=null;
+  scheduleSave();
+  renderCal();
+  renderAccount();
+}
+
+function updateTimezone(tz){
+  userTimezone=tz;
+  TODAY=getRealToday();
+  // update topbar date
+  updateTopbarDate();
+  // re-render calendar so today highlight moves
+  renderCal();
+  renderSummary();
+  renderSidebar();
+  // update preview in account if open
+  const preview=document.getElementById('tz-today-preview');
+  if(preview)preview.textContent=TODAY.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  scheduleSave();
+}
+
+function updateTopbarDate(){
+  const el=document.getElementById('tb-date');
+  if(el)el.textContent=TODAY.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ── CUSTOM RECURRING ──────────────────────────────────────────────────────
+const BUILT_IN_COUNT=8;
+const MAX_RECURRING=30;
+const FREQ_OPTS=['Monthly','Biweekly','Weekly','Daily','One-time'];
+
+function crTotal(){return BUILT_IN_COUNT+customRecurring.length;}
+
+function renderCustomRecurring(){
+  const wrap=document.getElementById('cr-wrap');if(!wrap)return;
+  const remaining=MAX_RECURRING-crTotal();
+  if(!customRecurring.length){
+    wrap.innerHTML=`<div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:13px"><i class="ti ti-plus-circle" style="font-size:24px;display:block;margin-bottom:8px;opacity:.3"></i>No custom items yet — Add up to ${remaining} more.</div>`;
+    return;
   }
+  wrap.innerHTML=`<div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+    <div style="display:grid;grid-template-columns:1fr 90px 110px 90px 30px;gap:6px;padding:8px 10px;background:var(--surface2);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">
+      <div>Name</div><div>Amount</div><div>Frequency</div><div>Day/Note</div><div></div>
+    </div>
+    ${customRecurring.map((cr,i)=>`<div class="cr-row" style="padding:8px 10px">
+      <input class="cr-in" value="${(cr.name||'').replace(/"/g,'&quot;')}" placeholder="Name"
+        onblur="updateCR(${i},'name',this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+      <input class="cr-in" type="number" value="${cr.amount||0}" step="0.01" min="0" placeholder="0.00"
+        onblur="updateCR(${i},'amount',parseFloat(this.value)||0)" onkeydown="if(event.key==='Enter')this.blur()">
+      <select class="cr-in" onchange="updateCR(${i},'freq',this.value)">
+        ${FREQ_OPTS.map(f=>`<option value="${f.toLowerCase()}"${cr.freq===f.toLowerCase()?'selected':''}>${f}</option>`).join('')}
+      </select>
+      <input class="cr-in" value="${cr.dayNote||''}" placeholder="e.g. 5"
+        onblur="updateCR(${i},'dayNote',this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+      <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px;border-radius:4px"
+        onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'"
+        onclick="deleteCR(${i})"><i class="ti ti-x"></i></button>
+    </div>`).join('')}
+  </div>`;
 }
 
-function updateBal(){
-  const v=parseFloat(document.getElementById('bal-in').value);
-  if(!isNaN(v)&&v>=0){openingBalance=v;renderAll();}
+function addCR(){
+  if(crTotal()>=MAX_RECURRING){alert(`Maximum ${MAX_RECURRING} recurring items reached.`);return;}
+  customRecurring.push({id:crNextId++,name:'New Item',amount:0,freq:'monthly',dayNote:'1',type:'expense'});
+  renderCustomRecurring();
+  updateCRCountLabel();
+  scheduleSave();
+}
+function updateCR(i,key,val){
+  if(!customRecurring[i])return;
+  customRecurring[i][key]=val;
+  scheduleSave();renderSummary();renderSidebar();
+  if(document.getElementById('sec-saving').classList.contains('active'))renderSavingNumbers();
+}
+function deleteCR(i){
+  customRecurring.splice(i,1);
+  renderCustomRecurring();updateCRCountLabel();scheduleSave();renderAll();
+}
+function updateCRCountLabel(){
+  const lbl=document.getElementById('cr-count');
+  if(lbl)lbl.textContent=`${crTotal()} / ${MAX_RECURRING} items`;
 }
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────
+// update built-in rate label
+function updateRateLabel(key,val){
+  // just a display label — stored in rateLabels
+  if(!window.rateLabels)window.rateLabels={};
+  window.rateLabels[key]=val.trim();
+  scheduleSave();
+}
+
+
 const TITLES={calendar:'Calendar',balance:'Balance',transactions:'Transactions',saving:'Saving Plan',account:'Account'};
 function nav(name){
   document.querySelectorAll('.sni').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick')===`nav('${name}')`));
@@ -1274,68 +1815,69 @@ function exportPDF(){
 
 renderAll();
 </script>
-<!-- Firebase panel modal -->
-<div id="fb-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center">
-  <div style="background:var(--surface);border-radius:var(--rl);padding:28px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative">
-    <button onclick="closeFBPanel()" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer"><i class="ti ti-x"></i></button>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-      <div style="width:40px;height:40px;border-radius:50%;background:#FEF3E2;display:flex;align-items:center;justify-content:center;font-size:20px">🔥</div>
+<!-- Google Drive sync panel -->
+<div id="gd-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border-radius:var(--rl);padding:28px;max-width:500px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;max-height:90vh;overflow-y:auto">
+    <button onclick="closeGDPanel()" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer"><i class="ti ti-x"></i></button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <div style="width:42px;height:42px;border-radius:50%;background:#E8F0FE;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">
+        <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.5 0 6.6 1.3 9 3.4l6.7-6.7C35.8 2.3 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6.1C12.4 13 17.7 9.5 24 9.5z"/><path fill="#34A853" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.4c-.5 2.8-2.1 5.2-4.4 6.8l7 5.4c4.1-3.8 6.5-9.4 6.5-16.2z" style="display:none"/><path fill="#FBBC04" d="M10.5 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.1.7-4.6l-7.8-6C.9 16.4 0 20.1 0 24c0 3.9.9 7.6 2.4 10.8l8.1-6.2z"/><path fill="#EA4335" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7-5.4c-2.1 1.4-4.8 2.3-8.2 2.3-6.3 0-11.6-3.5-13.5-8.6l-8.1 6.2C6.6 42.7 14.6 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      </div>
       <div>
-        <div style="font-size:16px;font-weight:600">Firebase Cloud Sync</div>
-        <div style="font-size:12px;color:var(--text3);margin-top:1px">Sync your data across all devices in real-time</div>
+        <div style="font-size:16px;font-weight:600">Google Drive Sync</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:1px">Save & load your data using your Google account</div>
+      </div>
+    </div>
+    <div id="gd-status-banner" style="display:none;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;align-items:center;gap:8px"></div>
+
+    <!-- not signed in -->
+    <div id="gd-signin-panel">
+      <div style="background:var(--surface2);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.75">
+        <strong style="color:var(--text)">One-time setup (5 min):</strong><br>
+        1. Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--blue)">console.cloud.google.com</a> → Create project<br>
+        2. <strong>APIs & Services</strong> → Enable <strong>Google Drive API</strong><br>
+        3. <strong>Credentials</strong> → Create <strong>OAuth 2.0 Client ID</strong> (Web app)<br>
+        4. Add authorised origin: <code style="background:var(--surface);padding:1px 5px;border-radius:4px;font-size:11px">https://nicapio.github.io</code><br>
+        5. Paste your Client ID below
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Google OAuth Client ID</label>
+        <input id="gd-client-id" class="fb-in" placeholder="xxxxxxxxxxxx-xxxxxxxx.apps.googleusercontent.com" style="font-size:12px">
+      </div>
+      <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="gd-autosave" style="width:14px;height:14px">
+        <label for="gd-autosave" style="font-size:13px;color:var(--text2);cursor:pointer">Auto-save to Drive on every change</label>
+      </div>
+      <button class="btn" onclick="gdSignIn()" style="width:100%;justify-content:center;gap:10px;padding:10px">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.3 9 3.4l6.7-6.7C35.8 2.3 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6.1C12.4 13 17.7 9.5 24 9.5z"/><path fill="#FBBC04" d="M10.5 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.1.7-4.6l-7.8-6C.9 16.4 0 20.1 0 24c0 3.9.9 7.6 2.4 10.8l8.1-6.2z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7-5.4c-2.1 1.4-4.8 2.3-8.2 2.3-6.3 0-11.6-3.5-13.5-8.6l-8.1 6.2C6.6 42.7 14.6 48 24 48z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.4c-.5 2.8-2.1 5.2-4.4 6.8l7 5.4c4.1-3.8 6.5-9.4 6.5-16.2z"/></svg>
+        Sign in with Google
+      </button>
+      <div style="margin-top:10px;text-align:center">
+        <button onclick="closeGDPanel()" style="background:none;border:none;font-size:12px;color:var(--text3);cursor:pointer">Cancel</button>
       </div>
     </div>
 
-    <!-- status banner -->
-    <div id="fb-status-banner" style="display:none;border-radius:var(--r);padding:10px 14px;margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:8px"></div>
-
-    <!-- config form -->
-    <div id="fb-config-form">
-      <div style="background:var(--surface2);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.7">
-        <strong style="color:var(--text)">Setup steps (2 minutes):</strong><br>
-        1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--blue)">console.firebase.google.com</a><br>
-        2. Create project → Add app (Web) → Copy config<br>
-        3. Go to <strong>Firestore Database</strong> → Create in test mode<br>
-        4. Paste your config values below
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <!-- signed in -->
+    <div id="gd-signed-panel" style="display:none">
+      <div id="gd-user-row" style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:var(--r);margin-bottom:16px">
+        <img id="gd-avatar" src="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;display:none">
         <div>
-          <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">API Key</label>
-          <input id="fb-apiKey" class="fb-in" placeholder="AIzaSy...">
+          <div id="gd-user-name" style="font-size:14px;font-weight:500"></div>
+          <div id="gd-user-email" style="font-size:12px;color:var(--text3)"></div>
         </div>
-        <div>
-          <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Project ID</label>
-          <input id="fb-projectId" class="fb-in" placeholder="my-finance-abc12">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Auth Domain</label>
-          <input id="fb-authDomain" class="fb-in" placeholder="project.firebaseapp.com">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">User ID (your name/key)</label>
-          <input id="fb-userId" class="fb-in" placeholder="nic" value="nic">
-        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:5px"><div style="width:7px;height:7px;border-radius:50%;background:var(--green-mid)"></div><span style="font-size:11px;color:var(--teal)">Connected</span></div>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn" onclick="connectFirebase()" style="flex:1"><i class="ti ti-plug-connected" style="font-size:14px"></i>Connect & Sync</button>
-        <button onclick="closeFBPanel()" style="padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:none;font-size:13px;color:var(--text2);cursor:pointer">Cancel</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <button class="btn" onclick="gdSave()" style="background:var(--green);justify-content:center"><i class="ti ti-cloud-upload" style="font-size:14px"></i>Save to Drive</button>
+        <button class="btn" onclick="gdLoad()" style="background:var(--blue);justify-content:center"><i class="ti ti-cloud-download" style="font-size:14px"></i>Load from Drive</button>
       </div>
-    </div>
-
-    <!-- connected state -->
-    <div id="fb-connected-panel" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-        <div style="font-size:13px;color:var(--text2)">User: <strong id="fb-user-display" style="color:var(--text)"></strong></div>
-        <div style="font-size:12px;color:var(--text3)" id="fb-last-sync"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:10px;background:var(--surface2);border-radius:var(--r)">
+        <input type="checkbox" id="gd-autosave-on" style="width:14px;height:14px" onchange="toggleAutoSave(this.checked)">
+        <label for="gd-autosave-on" style="font-size:13px;color:var(--text2);cursor:pointer">Auto-save to Drive on every change</label>
+        <span id="gd-autosave-badge" style="display:none;font-size:10px;padding:1px 7px;background:var(--green-light);color:var(--green);border-radius:20px;margin-left:auto">ON</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button class="btn" onclick="fbPush()" style="background:var(--green);"><i class="ti ti-cloud-upload" style="font-size:14px"></i>Push to cloud</button>
-        <button class="btn" onclick="fbPull()" style="background:var(--blue);"><i class="ti ti-cloud-download" style="font-size:14px"></i>Pull from cloud</button>
-      </div>
-      <div style="margin-top:10px;display:flex;gap:8px">
-        <button onclick="fbDisconnect()" style="flex:1;padding:7px;border:1px solid var(--border);border-radius:8px;background:none;font-size:12px;color:var(--red);cursor:pointer"><i class="ti ti-plug" style="font-size:12px;margin-right:4px"></i>Disconnect</button>
-        <button onclick="closeFBPanel()" style="flex:1;padding:7px;border:1px solid var(--border);border-radius:8px;background:none;font-size:12px;color:var(--text2);cursor:pointer">Close</button>
-      </div>
+      <div id="gd-file-info" style="font-size:12px;color:var(--text3);margin-bottom:14px"></div>
+      <button onclick="gdSignOut()" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;background:none;font-size:12px;color:var(--red);cursor:pointer"><i class="ti ti-logout" style="font-size:12px;margin-right:4px"></i>Sign out</button>
     </div>
   </div>
 </div>
@@ -1343,18 +1885,20 @@ renderAll();
 <style>
 .fb-in{width:100%;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);outline:none;font-family:var(--mono)}
 .fb-in:focus{border-color:var(--blue-mid)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 </style>
 
-<!-- Firebase SDK (loaded on demand) -->
 <script>
+// ── JSON BACKUP / RESTORE ─────────────────────────────────────────────────
 // ── JSON BACKUP / RESTORE ─────────────────────────────────────────────────
 function getFullState(){
   return{
     R,openingBalance,projFY,projFM,projTY,projTM,
     transactions:transactions.map(t=>({...t,date:t.date.toISOString()})),
-    extras,nextId,
+    extras,nextId,savingsGoals,sgNextId,
+    customRecurring,crNextId,appName,appSub,chartView,todayImage,userTimezone,
     exportedAt:new Date().toISOString(),
-    version:'v2'
+    version:'v3'
   };
 }
 
@@ -1365,6 +1909,15 @@ function applyState(s){
   if(s.projFY!==undefined){projFY=s.projFY;projFM=s.projFM;projTY=s.projTY;projTM=s.projTM;}
   if(s.nextId!==undefined)nextId=s.nextId;
   if(s.extras)extras=s.extras;
+  if(s.savingsGoals)savingsGoals=s.savingsGoals;
+  if(s.sgNextId)sgNextId=s.sgNextId;
+  if(s.customRecurring)customRecurring=s.customRecurring;
+  if(s.crNextId)crNextId=s.crNextId;
+  if(s.appName){appName=s.appName;document.getElementById('sb-logo-name').textContent=appName;document.title=appName+' — Finance';}
+  if(s.appSub){appSub=s.appSub;document.getElementById('sb-logo-sub').textContent=appSub;}
+  if(s.chartView)chartView=s.chartView;
+  if(s.todayImage!==undefined)todayImage=s.todayImage;
+  if(s.userTimezone){userTimezone=s.userTimezone;TODAY=getRealToday();}
   if(s.transactions)transactions=s.transactions.map(t=>({...t,date:new Date(t.date)}));
   document.getElementById('bal-from').value=`${projFY}-${String(projFM+1).padStart(2,'0')}`;
   document.getElementById('bal-to').value=`${projTY}-${String(projTM+1).padStart(2,'0')}`;
@@ -1413,164 +1966,221 @@ function showToast(msg,type='success'){
 }
 
 // ── FIREBASE PANEL ────────────────────────────────────────────────────────
-let fbApp=null,fbDb=null,fbConfig=null,fbUserId='nic';
-const FB_CONFIG_KEY='nic_firebase_config';
 
-function showFirebasePanel(){
-  document.getElementById('fb-overlay').style.display='flex';
-  // load saved config
-  try{
-    const saved=localStorage.getItem(FB_CONFIG_KEY);
-    if(saved){
-      const c=JSON.parse(saved);
-      document.getElementById('fb-apiKey').value=c.apiKey||'';
-      document.getElementById('fb-projectId').value=c.projectId||'';
-      document.getElementById('fb-authDomain').value=c.authDomain||'';
-      document.getElementById('fb-userId').value=c.userId||'nic';
-      // if already connected, show connected panel
-      if(fbDb&&c.apiKey){
-        showFBConnected(c.userId||'nic');return;
+// ── GOOGLE DRIVE SYNC ─────────────────────────────────────────────────────
+const GD_CONFIG_KEY = 'nic_gdrive_config';
+const GD_FILE_NAME  = 'finance_data.json';
+let gdToken     = null;  // OAuth access token
+let gdFileId    = null;  // Drive file ID once found/created
+let gdAutoSave  = false;
+let gdClientId  = '';
+let gdUserInfo  = null;
+
+function showGDPanel() {
+  document.getElementById('gd-overlay').style.display = 'flex';
+  // restore saved config
+  try {
+    const c = JSON.parse(localStorage.getItem(GD_CONFIG_KEY) || '{}');
+    if (c.clientId) document.getElementById('gd-client-id').value = c.clientId;
+    gdAutoSave = c.autoSave || false;
+    if (gdAutoSave) {
+      const cb = document.getElementById('gd-autosave');
+      if (cb) cb.checked = true;
+      const cb2 = document.getElementById('gd-autosave-on');
+      if (cb2) cb2.checked = true;
+    }
+    if (gdToken && gdUserInfo) { showGDSignedIn(); return; }
+  } catch(e) {}
+  setGDStatus('');
+  document.getElementById('gd-signin-panel').style.display = 'block';
+  document.getElementById('gd-signed-panel').style.display = 'none';
+}
+
+function closeGDPanel() { document.getElementById('gd-overlay').style.display = 'none'; }
+
+function setGDStatus(msg, type) {
+  const b = document.getElementById('gd-status-banner');
+  if (!msg) { b.style.display = 'none'; return; }
+  b.style.display = 'flex';
+  const map = { success:'#E8F5E9|#1B5E20', error:'#FCE4D6|#A32D2D', info:'#E6F1FB|#185FA5', loading:'#F0EEE8|#6B6860' };
+  const [bg, color] = (map[type] || map.info).split('|');
+  b.style.background = bg; b.style.color = color; b.style.border = '1px solid ' + color + '44';
+  const icons = { success:'ti-circle-check', error:'ti-alert-circle', loading:'ti-loader-2', info:'ti-info-circle' };
+  b.innerHTML = `<i class="ti ${icons[type]||'ti-info-circle'}" style="font-size:16px;flex-shrink:0${type==='loading'?';animation:spin 1s linear infinite':''}"></i> ${msg}`;
+}
+
+async function gdSignIn() {
+  const clientId = document.getElementById('gd-client-id').value.trim();
+  if (!clientId) { setGDStatus('Please enter your OAuth Client ID first.', 'error'); return; }
+  gdClientId = clientId;
+  gdAutoSave = document.getElementById('gd-autosave').checked;
+  // load GIS library
+  setGDStatus('Loading Google Sign-In…', 'loading');
+  try {
+    await loadScript('https://accounts.google.com/gsi/client');
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+      callback: async (resp) => {
+        if (resp.error) { setGDStatus('Sign-in failed: ' + resp.error, 'error'); return; }
+        gdToken = resp.access_token;
+        setGDStatus('Fetching profile…', 'loading');
+        try {
+          // get user info
+          const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: 'Bearer ' + gdToken }
+          });
+          gdUserInfo = await r.json();
+          // save config
+          localStorage.setItem(GD_CONFIG_KEY, JSON.stringify({ clientId, autoSave: gdAutoSave }));
+          setGDStatus('Signed in as ' + gdUserInfo.email, 'success');
+          showGDSignedIn();
+          updateGDMenuLabel(true);
+          showToast('✅ Signed in to Google Drive');
+        } catch(e) { setGDStatus('Could not fetch profile: ' + e.message, 'error'); }
       }
-    }
-  }catch(e){}
-  setFBStatus('');
-  document.getElementById('fb-config-form').style.display='block';
-  document.getElementById('fb-connected-panel').style.display='none';
+    });
+    setGDStatus('Opening Google sign-in window…', 'loading');
+    client.requestAccessToken({ prompt: 'consent' });
+  } catch(e) { setGDStatus('Error loading Google library: ' + e.message, 'error'); }
 }
 
-function closeFBPanel(){document.getElementById('fb-overlay').style.display='none';}
-
-function setFBStatus(msg,type=''){
-  const b=document.getElementById('fb-status-banner');
-  if(!msg){b.style.display='none';return;}
-  b.style.display='flex';
-  const colors={success:'#E8F5E9|#1B5E20',error:'#FCE4D6|#A32D2D',info:'#E6F1FB|#185FA5',loading:'#F0EEE8|#6B6860'};
-  const [bg,color]=(colors[type]||colors.info).split('|');
-  b.style.background=bg;b.style.color=color;b.style.border='1px solid '+color+'44';
-  b.innerHTML=`<i class="ti ${type==='success'?'ti-circle-check':type==='error'?'ti-alert-circle':type==='loading'?'ti-loader-2':'ti-info-circle'}" style="font-size:16px;flex-shrink:0${type==='loading'?';animation:spin 1s linear infinite':''}"></i>${msg}`;
+function showGDSignedIn() {
+  document.getElementById('gd-signin-panel').style.display = 'none';
+  document.getElementById('gd-signed-panel').style.display = 'block';
+  if (gdUserInfo) {
+    document.getElementById('gd-user-name').textContent = gdUserInfo.name || '';
+    document.getElementById('gd-user-email').textContent = gdUserInfo.email || '';
+    const av = document.getElementById('gd-avatar');
+    if (gdUserInfo.picture) { av.src = gdUserInfo.picture; av.style.display = 'block'; }
+  }
+  const cb2 = document.getElementById('gd-autosave-on');
+  const badge = document.getElementById('gd-autosave-badge');
+  if (cb2) cb2.checked = gdAutoSave;
+  if (badge) badge.style.display = gdAutoSave ? 'inline' : 'none';
 }
 
-async function connectFirebase(){
-  const apiKey=document.getElementById('fb-apiKey').value.trim();
-  const projectId=document.getElementById('fb-projectId').value.trim();
-  const authDomain=document.getElementById('fb-authDomain').value.trim();
-  const userId=document.getElementById('fb-userId').value.trim()||'nic';
-  if(!apiKey||!projectId){setFBStatus('API Key and Project ID are required.','error');return;}
-  setFBStatus('Connecting to Firebase…','loading');
-  try{
-    // load Firebase SDK dynamically
-    if(!window.firebase){
-      await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-      await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js');
+function toggleAutoSave(on) {
+  gdAutoSave = on;
+  const badge = document.getElementById('gd-autosave-badge');
+  if (badge) badge.style.display = on ? 'inline' : 'none';
+  try {
+    const c = JSON.parse(localStorage.getItem(GD_CONFIG_KEY) || '{}');
+    c.autoSave = on;
+    localStorage.setItem(GD_CONFIG_KEY, JSON.stringify(c));
+  } catch(e) {}
+  showToast(on ? '🔄 Auto-save enabled' : '⏸ Auto-save disabled', 'info');
+}
+
+async function gdFindOrCreateFile() {
+  if (!gdToken) return null;
+  if (gdFileId) return gdFileId;
+  // search for existing file
+  const q = encodeURIComponent(`name='${GD_FILE_NAME}' and trashed=false`);
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=drive&fields=files(id,name,modifiedTime)`, {
+    headers: { Authorization: 'Bearer ' + gdToken }
+  });
+  const data = await res.json();
+  if (data.files && data.files.length > 0) {
+    gdFileId = data.files[0].id;
+    const mod = new Date(data.files[0].modifiedTime).toLocaleString('en-CA', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const info = document.getElementById('gd-file-info');
+    if (info) info.textContent = '📄 ' + GD_FILE_NAME + ' — last modified ' + mod;
+    return gdFileId;
+  }
+  return null; // file doesn't exist yet
+}
+
+async function gdSave() {
+  if (!gdToken) { showToast('Not signed in to Google', 'error'); return; }
+  setGDStatus('Saving to Google Drive…', 'loading');
+  try {
+    const state = JSON.stringify(getFullState(), null, 2);
+    const blob = new Blob([state], { type: 'application/json' });
+    let fileId = await gdFindOrCreateFile();
+    let url, method;
+    if (fileId) {
+      url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`;
+      method = 'PATCH';
+    } else {
+      // create new file with metadata + content (multipart)
+      const meta = JSON.stringify({ name: GD_FILE_NAME, mimeType: 'application/json' });
+      const boundary = 'nic_finance_boundary';
+      const body = `--${boundary}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${state}\r\n--${boundary}--`;
+      const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + gdToken, 'Content-Type': `multipart/related; boundary=${boundary}` },
+        body
+      });
+      const created = await res.json();
+      gdFileId = created.id;
+      const now = new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+      setGDStatus('✅ Saved to Google Drive at ' + now, 'success');
+      updateSaveDot('saved');
+      showToast('☁️ Saved to Google Drive');
+      return;
     }
-    const config={apiKey,projectId,authDomain:authDomain||projectId+'.firebaseapp.com',storageBucket:projectId+'.appspot.com',messagingSenderId:'',appId:''};
-    if(fbApp){try{fbApp.delete();}catch(e){}}
-    fbApp=firebase.initializeApp(config,'financeApp_'+Date.now());
-    fbDb=fbApp.firestore();
-    fbConfig=config;fbUserId=userId;
-    // test connection with a read
-    await fbDb.collection('finance').doc(userId).get();
-    // save config
-    localStorage.setItem(FB_CONFIG_KEY,JSON.stringify({apiKey,projectId,authDomain,userId}));
-    setFBStatus('Connected successfully!','success');
-    setTimeout(()=>showFBConnected(userId),800);
-    updateFBMenuLabel(true);
-  }catch(err){
-    setFBStatus('Connection failed: '+err.message,'error');
-    console.error(err);
+    await fetch(url, { method, headers: { Authorization: 'Bearer ' + gdToken, 'Content-Type': 'application/json' }, body: state });
+    const now = new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+    setGDStatus('✅ Saved to Google Drive at ' + now, 'success');
+    updateSaveDot('saved', now);
+    showToast('☁️ Saved to Google Drive');
+  } catch(e) { setGDStatus('Save failed: ' + e.message, 'error'); showToast('Drive save failed', 'error'); }
+}
+
+async function gdLoad() {
+  if (!gdToken) { showToast('Not signed in to Google', 'error'); return; }
+  setGDStatus('Loading from Google Drive…', 'loading');
+  try {
+    const fileId = await gdFindOrCreateFile();
+    if (!fileId) { setGDStatus('No saved data found in Drive. Save first.', 'info'); return; }
+    if (!confirm('Replace all local data with version from Google Drive?')) { setGDStatus(''); return; }
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+      headers: { Authorization: 'Bearer ' + gdToken }
+    });
+    const s = await res.json();
+    applyState(s);
+    scheduleSave();
+    const now = new Date().toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+    setGDStatus('✅ Loaded from Drive at ' + now, 'success');
+    showToast('☁️ Data loaded from Google Drive');
+  } catch(e) { setGDStatus('Load failed: ' + e.message, 'error'); showToast('Drive load failed', 'error'); }
+}
+
+function gdSignOut() {
+  if (!confirm('Sign out from Google Drive?')) return;
+  gdToken = null; gdFileId = null; gdUserInfo = null;
+  document.getElementById('gd-signin-panel').style.display = 'block';
+  document.getElementById('gd-signed-panel').style.display = 'none';
+  setGDStatus('Signed out.', 'info');
+  updateGDMenuLabel(false);
+  showToast('Signed out from Google Drive', 'info');
+}
+
+function updateGDMenuLabel(connected) {
+  const lbl = document.getElementById('gd-menu-label');
+  const ico = document.getElementById('gd-menu-icon');
+  if (lbl) lbl.textContent = connected ? 'Google Drive (connected)' : 'Google Drive sync';
+  if (ico) ico.style.color = connected ? '#1D9E75' : '#4285F4';
+}
+
+function updateSaveDot(state, time) {
+  const dot = document.getElementById('save-dot');
+  const lbl = document.getElementById('save-lbl');
+  if (state === 'saved') {
+    if (dot) dot.className = 'save-dot';
+    if (lbl) lbl.textContent = 'Saved' + (time ? ' ' + time : '');
   }
 }
 
-function showFBConnected(userId){
-  document.getElementById('fb-config-form').style.display='none';
-  document.getElementById('fb-connected-panel').style.display='block';
-  document.getElementById('fb-user-display').textContent=userId;
-  setFBStatus('Connected — data syncs when you Push or Pull','success');
-}
-
-async function fbPush(){
-  if(!fbDb){showToast('Not connected to Firebase','error');return;}
-  setFBStatus('Pushing to cloud…','loading');
-  try{
-    const state=getFullState();
-    await fbDb.collection('finance').doc(fbUserId).set({...state,savedAt:new Date().toISOString()});
-    const now=new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('fb-last-sync').textContent='Last push: '+now;
-    setFBStatus('✅ Pushed to cloud at '+now,'success');
-    showToast('☁️ Saved to Firebase');
-  }catch(err){setFBStatus('Push failed: '+err.message,'error');showToast('Push failed: '+err.message,'error');}
-}
-
-async function fbPull(){
-  if(!fbDb){showToast('Not connected to Firebase','error');return;}
-  setFBStatus('Pulling from cloud…','loading');
-  try{
-    const doc=await fbDb.collection('finance').doc(fbUserId).get();
-    if(!doc.exists){setFBStatus('No data found in cloud for user "'+fbUserId+'"','info');return;}
-    if(!confirm('Replace all local data with cloud version?'))return;
-    applyState(doc.data());
-    scheduleSave();
-    const now=new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('fb-last-sync').textContent='Last pull: '+now;
-    setFBStatus('✅ Pulled from cloud at '+now,'success');
-    showToast('☁️ Data loaded from Firebase');
-  }catch(err){setFBStatus('Pull failed: '+err.message,'error');showToast('Pull failed: '+err.message,'error');}
-}
-
-function fbDisconnect(){
-  if(!confirm('Disconnect from Firebase? Local data is kept.'))return;
-  try{if(fbApp)fbApp.delete();}catch(e){}
-  fbApp=null;fbDb=null;fbConfig=null;
-  localStorage.removeItem(FB_CONFIG_KEY);
-  updateFBMenuLabel(false);
-  document.getElementById('fb-config-form').style.display='block';
-  document.getElementById('fb-connected-panel').style.display='none';
-  setFBStatus('Disconnected. Enter credentials to reconnect.','info');
-}
-
-function updateFBMenuLabel(connected){
-  const lbl=document.getElementById('fb-menu-label');
-  const ico=document.getElementById('fb-icon');
-  if(lbl)lbl.textContent=connected?'Firebase (connected)':'Firebase sync';
-  if(ico)ico.style.color=connected?'#1D9E75':'#F5A623';
-}
-
-function loadScript(src){
-  return new Promise((res,rej)=>{
-    const s=document.createElement('script');s.src=src;
-    s.onload=res;s.onerror=rej;
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    if (document.querySelector(`script[src="${src}"]`)) { res(); return; }
+    const s = document.createElement('script'); s.src = src;
+    s.onload = res; s.onerror = rej;
     document.head.appendChild(s);
   });
 }
-
-// auto-reconnect if config saved
-window.addEventListener('load',async()=>{
-  try{
-    const saved=localStorage.getItem(FB_CONFIG_KEY);
-    if(saved){
-      const c=JSON.parse(saved);
-      if(c.apiKey&&c.projectId){
-        await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-        await loadScript('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js');
-        const config={apiKey:c.apiKey,projectId:c.projectId,authDomain:c.authDomain||c.projectId+'.firebaseapp.com',storageBucket:c.projectId+'.appspot.com',messagingSenderId:'',appId:''};
-        fbApp=firebase.initializeApp(config,'financeApp_auto');
-        fbDb=fbApp.firestore();fbConfig=config;fbUserId=c.userId||'nic';
-        updateFBMenuLabel(true);
-        updateSaveLabel('Auto-synced');
-      }
-    }
-  }catch(e){console.log('Auto-reconnect skipped:',e.message);}
-});
-
-function updateSaveLabel(msg){
-  const lbl=document.getElementById('save-lbl');
-  if(lbl)lbl.textContent=msg;
-}
-
-// spin animation for loading icon
-const spinStyle=document.createElement('style');
-spinStyle.textContent='@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}';
-document.head.appendChild(spinStyle);
 </script>
 </body>
 </html>
