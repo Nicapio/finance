@@ -186,7 +186,10 @@ button{cursor:pointer}
 .extras-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .ext-sec{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rl);padding:16px}
 .ext-title{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.ext-row{display:grid;grid-template-columns:1fr 90px 90px 30px;gap:6px;align-items:center;margin-bottom:6px}
+.ext-row{display:grid;grid-template-columns:1fr 90px 110px 100px 30px;gap:6px;align-items:start;margin-bottom:8px}
+.ext-row-custom{display:grid;grid-template-columns:1fr 90px 110px 80px 50px 30px;gap:6px;align-items:start;margin-bottom:8px}
+.ext-date-row{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:-2px;padding:6px 8px;background:var(--surface);border:1px solid var(--border);border-radius:6px}
+.ext-date-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
 .ext-in{padding:6px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);width:100%}
 .ext-in:focus{outline:none;border-color:var(--blue-mid)}
 .ext-del{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text3);width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
@@ -893,8 +896,8 @@ function addTx(){
 function delTx(id){transactions=transactions.filter(t=>t.id!==id);renderAll()}
 
 // ── SAVING PLAN ───────────────────────────────────────────────────────────
-function renderSaving(){
-  // seed all months in projection period
+function renderSavingNumbers(){
+  // update cards + cashflow table WITHOUT touching the extras input form
   let sy=projFY,sm=projFM;
   while(sy<projTY||(sy===projTY&&sm<=projTM)){seedMonth(sy,sm);sm++;if(sm>11){sm=0;sy++;}}
   const bals=runBals(projFY,projFM,projTY,projTM);
@@ -903,7 +906,8 @@ function renderSaving(){
   const projNet=bals[bals.length-1].bal-openingBalance;
   const totalInc=bals.reduce((a,b)=>a+mInc(b.y,b.m),0);
   const projLabel=`${MS[projFM]} ${projFY}–${MS[projTM]} ${projTY}`;
-  document.getElementById('sv-row').innerHTML=`
+  const svRow=document.getElementById('sv-row');
+  if(svRow)svRow.innerHTML=`
     <div class="svc"><div class="svc-lbl">ICBC save/paycheque</div><div class="svc-val" style="color:var(--amber)">${fmt(icbcPP)}</div><div class="svc-sub">Set aside each pay for Jun 26</div>
       <div class="prog"><div class="prog-lbr"><span>Est. saved</span><span>${fmt(Math.min(openingBalance*.3,R.icbc))} / ${fmt(R.icbc)}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,openingBalance*.3/R.icbc*100).toFixed(0)}%;background:var(--amber)"></div></div></div>
     </div>
@@ -911,32 +915,127 @@ function renderSaving(){
     <div class="svc"><div class="svc-lbl">Net change ${projLabel}</div><div class="svc-val" style="color:${projNet>=0?'var(--blue)':'var(--red)'}">${fmt(projNet,true)}</div><div class="svc-sub">Change in bank balance</div></div>
     <div class="svc"><div class="svc-lbl">Total income ${projLabel}</div><div class="svc-val" style="color:var(--blue)">${fmt(totalInc)}</div><div class="svc-sub">All pay periods</div></div>`;
   const moN=['May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('cf-body').innerHTML=bals.map((b,i)=>{
+  const cfBody=document.getElementById('cf-body');
+  if(cfBody)cfBody.innerHTML=bals.map((b,i)=>{
     const y=b.y,m=b.m,inc=mInc(y,m),exp=mExp(y,m),net=inc-exp;
-    const moLabel=`${MS[m]} ${y}`;
-    return`<tr><td class="cf-mo">${moLabel}${m===ICBC_DATE.getMonth()&&y===ICBC_DATE.getFullYear()?'<span class="warn-pill">ICBC</span>':''}</td><td class="cf-in">+${fmt(inc)}</td><td class="cf-out">-${fmt(exp)}</td><td class="${net>=0?'cf-np':'cf-nn'}">${fmt(net,true)}</td><td class="cf-bal" style="color:${b.bal>=0?'var(--blue)':'var(--red)'}">${fmt(b.bal)}</td></tr>`;
+    return`<tr><td class="cf-mo">${MS[m]} ${b.y}${m===ICBC_DATE.getMonth()&&y===ICBC_DATE.getFullYear()?'<span class="warn-pill">ICBC</span>':''}</td><td class="cf-in">+${fmt(inc)}</td><td class="cf-out">-${fmt(exp)}</td><td class="${net>=0?'cf-np':'cf-nn'}">${fmt(net,true)}</td><td class="cf-bal" style="color:${b.bal>=0?'var(--blue)':'var(--red)'}">${fmt(b.bal)}</td></tr>`;
   }).join('');
+}
+
+function renderSaving(){
+  renderSavingNumbers();
   renderExtras();
 }
 
 function renderExtras(){
   ['income','expense'].forEach(type=>{
-    document.getElementById(`ext-${type==='income'?'inc':'exp'}-list`).innerHTML=extras[type].map((e,i)=>`
-      <div class="ext-row">
-        <input class="ext-in" value="${e.desc}" oninput="upExtra('${type}',${i},'desc',this.value)" placeholder="Description">
-        <input class="ext-in" type="number" value="${e.amt}" oninput="upExtra('${type}',${i},'amt',parseFloat(this.value)||0)" placeholder="0.00" step="0.01">
-        <select class="ext-in" onchange="upExtra('${type}',${i},'freq',this.value)">
-          <option value="monthly"${e.freq==='monthly'?' selected':''}>Monthly</option>
-          <option value="one-time"${e.freq==='one-time'?' selected':''}>One-time</option>
-        </select>
-        <button class="ext-del" onclick="rmExtra('${type}',${i})"><i class="ti ti-x"></i></button>
-      </div>`).join('');
+    const listId=`ext-${type==='income'?'inc':'exp'}-list`;
+    const html=extras[type].map((e,i)=>{
+      const isCustom=e.freq==='custom';
+      const showDate=e.freq==='one-time';
+      return`<div class="ext-item" id="ext-${type}-${i}" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:8px">
+        <div style="display:grid;grid-template-columns:1fr 90px 120px${isCustom?' 70px 50px':''} 30px;gap:6px;align-items:center">
+          <input class="ext-in" value="${e.desc||''}"
+            placeholder="Description"
+            onblur="upExtraField('${type}',${i},'desc',this.value)"
+            onkeydown="if(event.key==='Enter')this.blur()">
+          <input class="ext-in" type="number" value="${e.amt||''}"
+            placeholder="0.00" step="0.01" min="0"
+            onblur="upExtraField('${type}',${i},'amt',parseFloat(this.value)||0)"
+            onkeydown="if(event.key==='Enter')this.blur()">
+          <select class="ext-in" onchange="upExtraFreq('${type}',${i},this.value)">
+            <option value="monthly"${e.freq==='monthly'?' selected':''}>Monthly</option>
+            <option value="biweekly"${e.freq==='biweekly'?' selected':''}>Biweekly</option>
+            <option value="weekly"${e.freq==='weekly'?' selected':''}>Weekly</option>
+            <option value="daily"${e.freq==='daily'?' selected':''}>Daily</option>
+            <option value="one-time"${e.freq==='one-time'?' selected':''}>One-time</option>
+            <option value="custom"${e.freq==='custom'?' selected':''}>Custom (days)</option>
+          </select>
+          ${isCustom?`<input class="ext-in" type="number" value="${e.customDays||1}" min="1" step="1" placeholder="days"
+            onblur="upExtraField('${type}',${i},'customDays',parseInt(this.value)||1)"
+            onkeydown="if(event.key==='Enter')this.blur()">
+            <span style="font-size:11px;color:var(--text3);white-space:nowrap;align-self:center">day cycle</span>`:''}
+          <button class="ext-del" onclick="rmExtra('${type}',${i})"><i class="ti ti-x"></i></button>
+        </div>
+        ${showDate?`<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div class="ext-date-lbl">Start / One-time Date</div>
+            <input class="ext-in" type="date" value="${e.startDate||''}"
+              onchange="upExtraField('${type}',${i},'startDate',this.value)">
+          </div>
+        </div>`:''}
+        ${!showDate&&e.freq!=='monthly'?`<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div class="ext-date-lbl">Start Date</div>
+            <input class="ext-in" type="date" value="${e.startDate||''}"
+              onchange="upExtraField('${type}',${i},'startDate',this.value)">
+          </div>
+          <div>
+            <div class="ext-date-lbl">End Date (optional)</div>
+            <input class="ext-in" type="date" value="${e.endDate||''}"
+              onchange="upExtraField('${type}',${i},'endDate',this.value)">
+          </div>
+        </div>`:''}
+        <div style="margin-top:6px;font-size:11px;color:var(--text3)">
+          ${getExtraFreqLabel(e)}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById(listId).innerHTML=html;
   });
 }
 
-function addExtra(t){extras[t].push({desc:'',amt:0,freq:'monthly'});renderSaving()}
+function getExtraFreqLabel(e){
+  if(!e.amt||e.amt<=0)return'Enter amount above';
+  const a=fmt(e.amt);
+  switch(e.freq){
+    case'monthly':return`${a}/month → ${fmt(e.amt*12)}/year`;
+    case'biweekly':return`${a}/2 weeks → ${fmt(e.amt*26)}/year`;
+    case'weekly':return`${a}/week → ${fmt(e.amt*52)}/year`;
+    case'daily':return`${a}/day → ${fmt(e.amt*365)}/year`;
+    case'one-time':return`One-time on ${e.startDate||'(set date above)'}`;
+    case'custom':return`${a} every ${e.customDays||'?'} day(s)`;
+    default:return'';
+  }
+}
+
+function addExtra(t){
+  extras[t].push({desc:'',amt:0,freq:'monthly',startDate:'',endDate:'',customDays:14});
+  renderExtras();
+}
 function rmExtra(t,i){extras[t].splice(i,1);renderAll()}
-function upExtra(t,i,k,v){extras[t][i][k]=v;renderAll()}
+
+// blur-based update — does NOT re-render, just updates the data
+function upExtraField(t,i,k,v){
+  if(!extras[t][i])return;
+  extras[t][i][k]=v;
+  // update only the freq label line for this item without full re-render
+  const item=document.getElementById(`ext-${t}-${i}`);
+  if(item){
+    const lbl=item.querySelector('div[style*="margin-top:6px"]');
+    if(lbl)lbl.textContent=getExtraFreqLabel(extras[t][i]);
+  }
+  scheduleSave();
+  // update summary/projection numbers in background
+  renderSummary();renderSidebar();
+  if(document.getElementById('sec-saving').classList.contains('active')){
+    // only refresh cashflow table and cards, not the extras form itself
+    renderSavingNumbers();
+  }
+}
+
+// frequency change DOES need a re-render (to show/hide date fields)
+function upExtraFreq(t,i,v){
+  if(!extras[t][i])return;
+  extras[t][i].freq=v;
+  renderExtras(); // re-render just the extras section
+  scheduleSave();
+  renderSummary();renderSidebar();
+  if(document.getElementById('sec-saving').classList.contains('active'))renderSavingNumbers();
+}
+
+// legacy upExtra kept for compatibility
+function upExtra(t,i,k,v){extras[t][i][k]=v;}
 
 // ── ACCOUNT / RATES ───────────────────────────────────────────────────────
 function renderAccount(){
