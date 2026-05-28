@@ -161,6 +161,7 @@ button{cursor:pointer}
 .mnav button:hover{border-color:var(--border2);color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.9)}
 .mnav-lbl{font-size:14px;font-weight:600;min-width:130px;text-align:center;color:var(--text)}
 /* ── EXPORT DROPDOWN ── */
+/* export dropdown — click to open, not hover */
 .export-wrap{position:relative;display:inline-block}
 .export-btn{
   display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px;font-weight:600;
@@ -173,20 +174,23 @@ button{cursor:pointer}
 .export-btn i{font-size:15px}
 .export-menu{
   position:absolute;top:calc(100% + 8px);right:0;
-  background:rgba(255,255,255,.75);backdrop-filter:var(--glass-blur);
+  background:rgba(255,255,255,.88);backdrop-filter:var(--glass-blur);
   -webkit-backdrop-filter:var(--glass-blur);
   border:1px solid var(--border2);border-radius:var(--rl);
   box-shadow:0 20px 60px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.9);
-  min-width:190px;z-index:200;opacity:0;pointer-events:none;
-  transform:translateY(-8px) scale(.97);transition:all .2s cubic-bezier(.4,0,.2,1)
+  min-width:200px;z-index:200;
+  opacity:0;pointer-events:none;
+  transform:translateY(-8px) scale(.97);
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  padding:6px;
 }
-.export-wrap:hover .export-menu,.export-menu:hover{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+.export-menu.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
 .export-menu-item{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left;border-radius:8px}
 .export-menu-item:hover{background:rgba(255,255,255,.5);color:var(--text)}
 .export-menu-item i{font-size:16px}
 .export-menu-item .em-badge{font-size:10px;padding:1px 6px;border-radius:6px;margin-left:auto;font-weight:600}
-.em-xl{background:var(--green-light);color:var(--green)}
-.em-pdf{background:var(--red-light);color:var(--red)}
+.em-xl{background:rgba(16,185,129,.12);color:var(--green)}
+.em-pdf{background:rgba(220,38,38,.1);color:var(--red)}
 .export-menu-sep{height:1px;background:rgba(0,0,0,.06);margin:4px 8px}
 /* ── UNDO/REDO ── */
 .ur-wrap{
@@ -483,8 +487,8 @@ button{cursor:pointer}
         <button onclick="nextMo()"><i class="ti ti-chevron-right"></i></button>
       </div>
       <div class="export-wrap">
-        <button class="export-btn"><i class="ti ti-download"></i>Export<i class="ti ti-chevron-down" style="font-size:11px;margin-left:2px"></i></button>
-        <div class="export-menu" style="min-width:200px">
+        <button class="export-btn" onclick="toggleExportMenu(event)"><i class="ti ti-download"></i>Export<i class="ti ti-chevron-down" style="font-size:11px;margin-left:2px"></i></button>
+        <div class="export-menu" id="export-menu" style="min-width:210px">
           <div style="padding:6px 14px 4px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:600">Download</div>
           <button class="export-menu-item" onclick="exportExcel()"><i class="ti ti-file-spreadsheet" style="color:#1B5E20"></i>Excel<span class="em-badge em-xl">.xlsx</span></button>
           <button class="export-menu-item" onclick="exportPDF()"><i class="ti ti-file-type-pdf" style="color:#A32D2D"></i>PDF<span class="em-badge em-pdf">.pdf</span></button>
@@ -751,6 +755,31 @@ document.addEventListener('keydown',e=>{
 // ── LOCALSTORAGE SAVE / LOAD ───────────────────────────────────────────────
 const SAVE_KEY='nic_finance_v1';
 let saveTimer=null;
+
+// ── EXPORT MENU TOGGLE ────────────────────────────────────────────────────
+function toggleExportMenu(e){
+  e.stopPropagation();
+  const menu=document.getElementById('export-menu');
+  if(!menu)return;
+  menu.classList.toggle('open');
+}
+// close when clicking anywhere else
+document.addEventListener('click',()=>{
+  const menu=document.getElementById('export-menu');
+  if(menu)menu.classList.remove('open');
+});
+
+// ── OPENING BALANCE ───────────────────────────────────────────────────────
+function updateBal(){
+  const inp=document.getElementById('bal-in');
+  if(!inp)return;
+  const v=parseFloat(inp.value);
+  if(!isNaN(v)&&v>=0){
+    openingBalance=v;
+    snapshot();scheduleSave();renderAll();
+    showToast('✅ Opening balance updated');
+  }
+}
 
 function scheduleSave(){
   const dot=document.getElementById('save-dot');
@@ -2096,8 +2125,57 @@ function getRatesData(){
 }
 
 // ── EXCEL EXPORT ──────────────────────────────────────────────────────────
+// ── EXPORT LOADING STATE ──────────────────────────────────────────────────
+function startExport(label, icon, doFn) {
+  // Show a toast with spinner
+  const t = document.getElementById('toast-el') || (() => {
+    const el = document.createElement('div');
+    el.id = 'toast-el';
+    el.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.15);transition:all .3s;opacity:0;transform:translateY(8px);display:flex;align-items:center;gap:10px;backdrop-filter:blur(12px)';
+    document.body.appendChild(el);
+    return el;
+  })();
+
+  // spinning loader icon
+  t.innerHTML = '<i class="ti ' + icon + '" style="font-size:16px;animation:spin .8s linear infinite"></i>'
+    + 'Preparing ' + label + '…';
+  t.style.background = 'rgba(30,30,60,.88)';
+  t.style.color = '#fff';
+  t.style.opacity = '1';
+  t.style.transform = 'translateY(0)';
+
+  // disable export button temporarily
+  const btn = document.querySelector('.export-btn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+
+  // natural delay: 1.2–1.8s feels like real work
+  const delay = 1200 + Math.random() * 600;
+
+  clearTimeout(t._timer);
+  setTimeout(() => {
+    try {
+      doFn();
+      t.innerHTML = '<i class="ti ti-circle-check" style="font-size:16px"></i>' + label + ' downloaded!';
+      t.style.background = 'rgba(5,120,80,.9)';
+    } catch(e) {
+      t.innerHTML = '<i class="ti ti-alert-circle" style="font-size:16px"></i>Export failed';
+      t.style.background = 'rgba(180,30,30,.9)';
+      console.error(e);
+    }
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    t._timer = setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(8px)';
+    }, 2500);
+  }, delay);
+}
+
 function exportExcel(){
   if(typeof XLSX==='undefined'){alert('SheetJS not loaded yet, please wait a moment and try again.');return;}
+  startExport('Excel','ti-file-spreadsheet',()=>_doExportExcel());
+}
+function _doExportExcel(){
+  if(typeof XLSX==='undefined'){return;}
   const page=currentPageName();
   const wb=XLSX.utils.book_new();
   const mo=MN[vM]+' '+vY;
@@ -2130,6 +2208,10 @@ function exportExcel(){
 // ── PDF EXPORT ────────────────────────────────────────────────────────────
 function exportPDF(){
   if(typeof window.jspdf==='undefined'){alert('jsPDF not loaded yet, please wait a moment and try again.');return;}
+  startExport('PDF','ti-file-type-pdf',()=>_doExportPDF());
+}
+function _doExportPDF(){
+  if(typeof window.jspdf==='undefined'){return;}
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
   const page=currentPageName();
