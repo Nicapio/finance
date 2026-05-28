@@ -71,8 +71,49 @@ button{cursor:pointer}
   display:flex;flex-direction:column;
   position:fixed;top:0;left:0;bottom:0;z-index:100;
   box-shadow:4px 0 24px rgba(100,80,200,.06);
+  transition:width .3s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
 }
-.main{margin-left:220px;flex:1}
+.sb.collapsed{width:60px}
+.main{margin-left:220px;flex:1;transition:margin-left .3s cubic-bezier(.4,0,.2,1)}
+.main.collapsed{margin-left:60px}
+/* hide text labels when collapsed */
+.sb.collapsed .sb-logo-name,
+.sb.collapsed .sb-logo-sub,
+.sb.collapsed .sb-bank-name,
+.sb.collapsed .sb-bank-num,
+.sb.collapsed .sni span,
+.sb.collapsed .sb-bal-card{
+  opacity:0;pointer-events:none;transition:opacity .15s;width:0;overflow:hidden;
+}
+.sb.collapsed .sb-bank{justify-content:center}
+.sb.collapsed .sb-logo{display:flex;align-items:center;justify-content:center}
+.sb.collapsed .sni{justify-content:center;padding:9px}
+/* toggle button */
+.sb-toggle{
+  position:absolute;
+  top:50%;right:-14px;
+  transform:translateY(-50%);
+  width:28px;height:28px;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  backdrop-filter:var(--glass-blur-sm);
+  border:1px solid var(--border);
+  box-shadow:0 2px 10px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.9);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:13px;color:var(--text2);
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  z-index:101;
+}
+.sb-toggle:hover{
+  background:rgba(255,255,255,1);
+  box-shadow:0 4px 16px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,1);
+  color:var(--blue);
+  transform:translateY(-50%) scale(1.1);
+}
+.sb-toggle i{transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sb.collapsed .sb-toggle{right:-14px}
+.sb.collapsed .sb-toggle i{transform:rotate(180deg)}
 .sb-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
 .sb-logo-name{font-size:17px;font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sb-logo-sub{font-size:11px;color:var(--text3);margin-top:1px}
@@ -394,7 +435,10 @@ button{cursor:pointer}
 <body>
 <div class="layout">
 
-<aside class="sb">
+<aside class="sb" id="sidebar">
+  <button class="sb-toggle" id="sb-toggle" onclick="toggleSidebar()" title="Expand / collapse sidebar" aria-label="Toggle sidebar">
+    <i class="ti ti-chevron-left" id="sb-toggle-icon"></i>
+  </button>
   <div class="sb-logo">
     <div class="sb-logo-name" id="sb-logo-name" onclick="editAppName()" title="Click to edit" style="cursor:pointer">My Finance</div>
     <div class="sb-logo-sub" id="sb-logo-sub" onclick="editAppSub()" title="Click to edit" style="cursor:pointer">Nic's Dashboard</div>
@@ -418,7 +462,7 @@ button{cursor:pointer}
   </div>
 </aside>
 
-<main class="main">
+<main class="main" id="main-content">
   <div class="topbar">
     <div><div class="tb-title" id="pg-title">Calendar</div><div class="tb-date" id="tb-date"></div></div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -1144,35 +1188,238 @@ function renderCal(){
 }
 
 function showDay(d){
-  const dt=new Date(vY,vM,d),ev=[];
-  if(payDates(vY,vM).some(x=>isSame(x,dt)))ev.push({l:'Salary deposit',a:R.salary,t:'income',ic:'ti-cash'});
-  if(d===1)ev.push({l:'Rent',a:R.rent,t:'expense',ic:'ti-home'});
-  if(gymDates(vY,vM).some(x=>isSame(x,dt)))ev.push({l:'Gym Membership',a:R.gym,t:'expense',ic:'ti-barbell'});
-  if(d===10)ev.push({l:'WiFi Bill',a:R.wifi,t:'expense',ic:'ti-wifi'});
-  if(d===15)ev.push({l:'Car Wash',a:R.carwash,t:'expense',ic:'ti-car'});
-  if(d===20)ev.push({l:'Phone Bill',a:R.phone,t:'expense',ic:'ti-phone'});
-  if(dt.getDay()===1)ev.push({l:'Gas Fill-up',a:R.gas,t:'expense',ic:'ti-gas-station'});
-  if(isSame(dt,ICBC_DATE))ev.push({l:'ICBC Insurance',a:R.icbc,t:'expense',ic:'ti-car-crash'});
-  transactions.filter(t=>isSame(t.date,dt)&&!t.rec&&!t.sgId).forEach(t=>ev.push({l:t.desc,a:t.amt,t:t.type,ic:CI[t.cat]||'ti-dots',manual:true,id:t.id}));
-  // savings goal transactions
-  transactions.filter(t=>isSame(t.date,dt)&&t.sgId).forEach(t=>{
-    const goal=savingsGoals.find(g=>g.id===t.sgId);
-    const color=goal?.color||'#F59E0B';
-    ev.push({l:(goal?goal.name:'Savings Goal'),a:t.amt,t:t.type,ic:'ti-flag-3-filled',goal:true,color});
-  });
-  if(!ev.length){document.getElementById('day-detail').innerHTML='';return;}
-  const rows=ev.map(e=>`<tr>
-    <td class="bdt-lbl">
-      <span style="font-size:15px;line-height:1;${e.goal?'':'display:none'}">🚩</span>
-      <i class="ti ${e.ic}" style="${e.goal?'display:none':''}color:${e.goal?e.color:''};font-size:14px"></i>
-      ${e.l}
-      ${e.goal?`<span style="font-size:10px;padding:1px 6px;background:#FEF3C7;color:#92400E;border-radius:20px;margin-left:6px;font-weight:500">🚩 savings goal</span>`:''}
-      ${e.manual?'<span style="font-size:10px;padding:1px 6px;background:var(--blue-light);color:var(--blue);border-radius:20px;margin-left:6px">manual</span>':''}
-    </td>
-    <td class="${e.t==='income'?'bdt-in':'bdt-out'}">${e.t==='income'?'+':'-'}${fmt(e.a)}</td>
-  </tr>`).join('');
-  document.getElementById('day-detail').innerHTML=`<div class="card"><div class="card-title"><i class="ti ti-calendar-event"></i>${dt.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'})}</div><table class="bdt">${rows}</table></div>`;
+  const dt=new Date(vY,vM,d);
+  openDayModal(d,dt);
 }
+
+// ── DAY MODAL ─────────────────────────────────────────────────────────────
+let dayModalD=null,dayModalDt=null,dayModalTab='view';
+
+function openDayModal(d,dt){
+  dayModalD=d; dayModalDt=dt; dayModalTab='view';
+  document.getElementById('day-modal-overlay').style.display='flex';
+  renderDayModal();
+}
+
+function closeDayModal(){
+  document.getElementById('day-modal-overlay').style.display='none';
+  dayModalD=null; dayModalDt=null;
+  // clear day-detail below calendar
+  const dd=document.getElementById('day-detail');
+  if(dd)dd.innerHTML='';
+}
+
+function setDayTab(tab){
+  dayModalTab=tab;
+  renderDayModal();
+}
+
+function renderDayModal(){
+  const d=dayModalD, dt=dayModalDt;
+  if(!d||!dt)return;
+  const dateStr=dt.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+  const pd=payDates(vY,vM), gd=gymDates(vY,vM);
+  const recurringItems=[
+    pd.some(x=>isSame(x,dt)) && {key:'salary',l:'Salary deposit',a:R.salary,t:'income',ic:'ti-cash'},
+    d===1 && {key:'rent',l:'Rent',a:R.rent,t:'expense',ic:'ti-home'},
+    gd.some(x=>isSame(x,dt)) && {key:'gym',l:'Gym Membership',a:R.gym,t:'expense',ic:'ti-barbell'},
+    d===10 && {key:'wifi',l:'WiFi Bill',a:R.wifi,t:'expense',ic:'ti-wifi'},
+    d===15 && {key:'wash',l:'Car Wash',a:R.carwash,t:'expense',ic:'ti-car'},
+    d===20 && {key:'phone',l:'Phone Bill',a:R.phone,t:'expense',ic:'ti-phone'},
+    dt.getDay()===1 && {key:'gas',l:'Gas Fill-up',a:R.gas,t:'expense',ic:'ti-gas-station'},
+    isSame(dt,ICBC_DATE) && {key:'icbc',l:'ICBC Insurance',a:R.icbc,t:'expense',ic:'ti-car-crash'},
+  ].filter(Boolean);
+
+  const dayKey='skip_'+vY+'_'+vM+'_'+d;
+  let skipped=[];
+  try{skipped=JSON.parse(localStorage.getItem(dayKey)||'[]');}catch(e){}
+
+  const manTx=transactions.filter(t=>isSame(t.date,dt)&&!t.rec&&!t.sgId);
+  const sgTx=transactions.filter(t=>isSame(t.date,dt)&&t.sgId);
+  const total=recurringItems.length+manTx.length+sgTx.length;
+
+  // tab content
+  let body='';
+
+  if(dayModalTab==='view'){
+    // ── VIEW: show all items ──
+    const recHTML=recurringItems.length?
+      '<div style="margin-bottom:14px">'
+      +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Recurring</div>'
+      +recurringItems.map(item=>{
+        const sk=skipped.includes(item.key);
+        return'<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(0,0,0,.03);margin-bottom:4px">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+          +'<i class="ti '+item.ic+'" style="font-size:13px;color:var(--text3)"></i></div>'
+          +'<div style="flex:1;font-size:13px;font-weight:600;color:'+(sk?'var(--text3)':'var(--text)')+';text-decoration:'+(sk?'line-through':'none')+'">'+item.l+'</div>'
+          +'<div style="font-size:12px;font-weight:600;font-family:var(--mono);color:'+(sk?'var(--text3)':item.t==='income'?'var(--green)':'var(--red)')+'">'+( sk?'skipped':(item.t==='income'?'+':'-')+fmt(item.a))+'</div>'
+          +'<button onclick="toggleSkipRecurring('+d+',\''+item.key+'\')" style="font-size:10px;font-weight:600;padding:3px 8px;border:1px solid rgba(0,0,0,.1);border-radius:6px;background:'+(sk?'rgba(16,185,129,.1)':'rgba(220,38,38,.06)')+';color:'+(sk?'var(--green)':'var(--red)')+';cursor:pointer">'+(sk?'Restore':'Skip')+'</button>'
+          +'</div>';
+      }).join('')
+      +'</div>':'' ;
+
+    const sgHTML=sgTx.length?
+      '<div style="margin-bottom:14px">'
+      +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Savings Goals</div>'
+      +sgTx.map(t=>{
+        const goal=savingsGoals.find(g=>g.id===t.sgId);
+        const color=goal?.color||'#F59E0B';
+        return'<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(0,0,0,.03);margin-bottom:4px">'
+          +'<span style="font-size:18px">🚩</span>'
+          +'<div style="flex:1;font-size:13px;font-weight:600;color:'+color+'">'+(goal?goal.name:'Savings Goal')+'</div>'
+          +'<div style="font-size:12px;font-weight:600;font-family:var(--mono);color:var(--red)">-'+fmt(t.amt)+'</div>'
+          +'</div>';
+      }).join('')
+      +'</div>':'' ;
+
+    const manHTML=manTx.length?
+      '<div style="margin-bottom:14px">'
+      +'<div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Transactions</div>'
+      +manTx.map(t=>{
+        const icon=CI[t.cat]||'ti-dots', color=CC[t.cat]||'#888';
+        return'<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(0,0,0,.03);margin-bottom:4px">'
+          +'<div style="width:28px;height:28px;border-radius:50%;background:'+color+'18;display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+          +'<i class="ti '+icon+'" style="font-size:13px;color:'+color+'"></i></div>'
+          +'<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">'+t.desc+'</div>'
+          +'<div style="font-size:11px;color:var(--text3)">'+t.cat+'</div></div>'
+          +'<div style="font-size:12px;font-weight:600;font-family:var(--mono);color:'+(t.type==='income'?'var(--green)':'var(--red)')+'">'+(t.type==='income'?'+':'-')+fmt(t.amt)+'</div>'
+          +'<button onclick="delTxFromDay('+t.id+','+d+')" style="width:24px;height:24px;border:1px solid rgba(220,38,38,.2);border-radius:6px;background:rgba(220,38,38,.06);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px">'
+          +'<i class="ti ti-x"></i></button>'
+          +'</div>';
+      }).join('')
+      +'</div>':'' ;
+
+    const empty=!recurringItems.length&&!manTx.length&&!sgTx.length
+      ?'<div style="text-align:center;padding:2rem 1rem;color:var(--text3)"><div style="font-size:32px;margin-bottom:8px">📅</div>Nothing scheduled — add something below</div>'
+      :'';
+    body=recHTML+sgHTML+manHTML+empty;
+
+  } else if(dayModalTab==='add-tx'){
+    // ── ADD TRANSACTION ──
+    body='<div style="display:flex;flex-direction:column;gap:12px">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Description</label>'
+      +'<input id="dm-desc" type="text" placeholder="e.g. Coffee" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none"></div>'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Amount ($)</label>'
+      +'<input id="dm-amt" type="number" placeholder="0.00" step="0.01" min="0" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none"></div>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Type</label>'
+      +'<select id="dm-type" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none"><option value="expense">Expense</option><option value="income">Income</option></select></div>'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Category</label>'
+      +'<select id="dm-cat" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none">'
+      +'<option>Food & Groceries</option><option>Transport</option><option>Entertainment</option><option>Shopping</option><option>Health</option><option>Bills</option><option>Dining Out</option><option>Salary</option><option>Other</option>'
+      +'</select></div></div>'
+      +'<button onclick="addTxFromDay('+d+')" class="btn" style="width:100%;justify-content:center;margin-top:4px"><i class="ti ti-plus" style="font-size:14px"></i>Add transaction</button>'
+      +'</div>';
+
+  } else if(dayModalTab==='add-sg'){
+    // ── ADD SAVINGS GOAL ──
+    const colorOpts=([{name:'Amber',val:'#F59E0B'},{name:'Blue',val:'#3b82f6'},{name:'Green',val:'#10b981'},{name:'Red',val:'#ef4444'},{name:'Purple',val:'#8b5cf6'},{name:'Pink',val:'#ec4899'},{name:'Teal',val:'#14b8a6'},{name:'Orange',val:'#f97316'}])
+      .map(c=>'<option value="'+c.val+'">'+c.name+'</option>').join('');
+    body='<div style="display:flex;flex-direction:column;gap:12px">'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Goal name</label>'
+      +'<input id="dm-sg-name" type="text" placeholder="e.g. Vacation fund" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none"></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Target ($)</label>'
+      +'<input id="dm-sg-target" type="number" placeholder="0.00" step="0.01" min="0" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none"></div>'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Already saved ($)</label>'
+      +'<input id="dm-sg-saved" type="number" placeholder="0.00" step="0.01" min="0" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none"></div>'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Colour</label>'
+      +'<select id="dm-sg-color" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none">'+colorOpts+'</select></div>'
+      +'</div>'
+      +'<div><label style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Due date <span style="color:var(--blue)">(pre-filled to this day)</span></label>'
+      +'<input id="dm-sg-due" type="date" value="'+dt.toISOString().slice(0,10)+'" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid rgba(0,0,0,.1);border-radius:10px;background:rgba(255,255,255,.7);color:var(--text);outline:none"></div>'
+      +'<button onclick="addSGFromDay()" class="btn" style="width:100%;justify-content:center;margin-top:4px"><i class="ti ti-target" style="font-size:14px"></i>Add savings goal</button>'
+      +'</div>';
+
+  } else if(dayModalTab==='add-rec'){
+    // ── ADD/SKIP RECURRING ──
+    body='<div style="font-size:13px;color:var(--text2);margin-bottom:14px">Toggle recurring items on/off for <strong>'+dateStr+'</strong> only.</div>';
+    if(!recurringItems.length){
+      body+='<div style="text-align:center;padding:1.5rem;color:var(--text3)">No recurring items on this date.</div>';
+    } else {
+      body+=recurringItems.map(item=>{
+        const sk=skipped.includes(item.key);
+        return'<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;background:rgba(0,0,0,.03);margin-bottom:6px">'
+          +'<div style="width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+          +'<i class="ti '+item.ic+'" style="font-size:15px;color:var(--text3)"></i></div>'
+          +'<div style="flex:1">'
+          +'<div style="font-size:13px;font-weight:600;color:var(--text)">'+item.l+'</div>'
+          +'<div style="font-size:11px;color:var(--text3)">'+(item.t==='income'?'+':'-')+fmt(item.a)+'</div>'
+          +'</div>'
+          +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:'+(sk?'var(--text3)':'var(--green)')+';">'
+          +'<div onclick="toggleSkipRecurring('+d+',\''+item.key+'\')" style="width:42px;height:24px;border-radius:12px;background:'+(sk?'rgba(0,0,0,.15)':'rgba(16,185,129,.8)')+';position:relative;transition:background .2s;cursor:pointer">'
+          +'<div style="position:absolute;top:3px;left:'+(sk?'3px':'21px')+';width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>'
+          +(sk?'Skipped':'Active')+'</label>'
+          +'</div>';
+      }).join('');
+    }
+  }
+
+  document.getElementById('dm-date-title').textContent=dateStr;
+  document.getElementById('dm-body').innerHTML=body;
+
+  // update tab active state
+  ['view','add-tx','add-sg','add-rec'].forEach(t=>{
+    const btn=document.getElementById('dm-tab-'+t);
+    if(btn){
+      btn.style.background=dayModalTab===t?'rgba(255,255,255,.85)':'transparent';
+      btn.style.color=dayModalTab===t?'var(--blue)':'var(--text3)';
+      btn.style.fontWeight=dayModalTab===t?'700':'500';
+    }
+  });
+
+  // focus first input if on form tabs
+  setTimeout(()=>{
+    const inp=document.querySelector('#dm-body input[type=text],#dm-body input[type=number]');
+    if(inp&&dayModalTab!=='view'&&dayModalTab!=='add-rec')inp.focus();
+  },50);
+}
+
+function addTxFromDay(d){
+  const desc=(document.getElementById('dm-desc')||document.getElementById('daf-desc'))?.value.trim();
+  const amt=parseFloat((document.getElementById('dm-amt')||document.getElementById('daf-amt'))?.value);
+  const type=(document.getElementById('dm-type')||document.getElementById('daf-type'))?.value||'expense';
+  const cat=(document.getElementById('dm-cat')||document.getElementById('daf-cat'))?.value||'Other';
+  if(!desc||isNaN(amt)||amt<=0)return;
+  transactions.push({id:nextId++,desc,amt:Math.round(amt*100)/100,date:new Date(vY,vM,d),type,cat,rec:false});
+  snapshot();scheduleSave();renderCal();renderSummary();renderSidebar();
+  dayModalTab='view'; renderDayModal();
+}
+
+function addSGFromDay(){
+  const name=document.getElementById('dm-sg-name')?.value.trim();
+  const target=parseFloat(document.getElementById('dm-sg-target')?.value)||0;
+  const saved=parseFloat(document.getElementById('dm-sg-saved')?.value)||0;
+  const dueDate=document.getElementById('dm-sg-due')?.value;
+  const color=document.getElementById('dm-sg-color')?.value||'#F59E0B';
+  if(!name||target<=0){alert('Please enter a goal name and target amount.');return;}
+  const newGoal={id:sgNextId++,name,target,saved,dueDate,color};
+  savingsGoals.push(newGoal);
+  syncSGTransaction(newGoal);
+  snapshot();scheduleSave();renderCal();renderSummary();renderSidebar();
+  if(document.getElementById('sec-saving').classList.contains('active'))renderSaving();
+  dayModalTab='view'; renderDayModal();
+}
+
+function delTxFromDay(id,d){
+  transactions=transactions.filter(t=>t.id!==id);
+  snapshot();scheduleSave();renderCal();renderSummary();renderSidebar();
+  renderDayModal();
+}
+
+function toggleSkipRecurring(d,key){
+  const dayKey='skip_'+vY+'_'+vM+'_'+d;
+  let skipped=[];
+  try{skipped=JSON.parse(localStorage.getItem(dayKey)||'[]');}catch(e){}
+  const idx=skipped.indexOf(key);
+  if(idx>=0)skipped.splice(idx,1);else skipped.push(key);
+  try{localStorage.setItem(dayKey,JSON.stringify(skipped));}catch(e){}
+  renderCal();renderDayModal();
+}
+
 
 // ── BALANCE ───────────────────────────────────────────────────────────────
 function setChartView(v){
@@ -1769,6 +2016,28 @@ function nav(name){
   if(name==='account')renderAccount();
 }
 
+// ── SIDEBAR TOGGLE ────────────────────────────────────────────────────────
+let sidebarCollapsed=false;
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  const sb=document.getElementById('sidebar');
+  const main=document.getElementById('main-content');
+  const icon=document.getElementById('sb-toggle-icon');
+  sb.classList.toggle('collapsed',sidebarCollapsed);
+  main.classList.toggle('collapsed',sidebarCollapsed);
+  if(icon){
+    icon.style.transform=sidebarCollapsed?'rotate(180deg)':'rotate(0deg)';
+  }
+  // persist
+  try{localStorage.setItem('sb_collapsed',sidebarCollapsed?'1':'0');}catch(e){}
+}
+function initSidebar(){
+  try{
+    const saved=localStorage.getItem('sb_collapsed');
+    if(saved==='1'){sidebarCollapsed=true;const sb=document.getElementById('sidebar');const main=document.getElementById('main-content');if(sb)sb.classList.add('collapsed');if(main)main.classList.add('collapsed');const icon=document.getElementById('sb-toggle-icon');if(icon)icon.style.transform='rotate(180deg)';}
+  }catch(e){}
+}
+
 function prevMo(){vM--;if(vM<0){vM=11;vY--;}renderAll();if(document.getElementById('sec-balance').classList.contains('active'))renderBreakdown();}
 function nextMo(){vM++;if(vM>11){vM=0;vY++;}renderAll();if(document.getElementById('sec-balance').classList.contains('active'))renderBreakdown();}
 
@@ -1932,6 +2201,7 @@ function exportPDF(){
 }
 
 renderAll();
+initSidebar();
 // ── JSON BACKUP / RESTORE ─────────────────────────────────────────────────
 function getFullState(){
   return{
@@ -2296,5 +2566,31 @@ function loadScript(src) {
 </div>
 
 
+<!-- Day modal -->
+<div id="day-modal-overlay" onclick="if(event.target===this)closeDayModal()" style="display:none;position:fixed;inset:0;background:rgba(20,20,40,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:2000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:rgba(255,255,255,.82);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border:1px solid rgba(255,255,255,.7);border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.9);width:100%;max-width:520px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden">
+    <!-- header -->
+    <div style="padding:20px 20px 0;flex-shrink:0">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px">Selected date</div>
+          <div id="dm-date-title" style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px"></div>
+        </div>
+        <button onclick="closeDayModal()" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(0,0,0,.1);background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--text2);flex-shrink:0">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <!-- tabs -->
+      <div style="display:flex;gap:3px;background:rgba(0,0,0,.06);border-radius:12px;padding:3px;margin-bottom:16px">
+        <button id="dm-tab-view"     onclick="setDayTab('view')"   style="flex:1;padding:7px 4px;font-size:12px;font-weight:600;border:none;border-radius:9px;cursor:pointer;transition:all .18s;background:rgba(255,255,255,.85);color:var(--blue)"><i class="ti ti-list" style="font-size:13px;display:block;margin-bottom:2px"></i>Events</button>
+        <button id="dm-tab-add-tx"   onclick="setDayTab('add-tx')" style="flex:1;padding:7px 4px;font-size:12px;font-weight:500;border:none;border-radius:9px;cursor:pointer;transition:all .18s;background:transparent;color:var(--text3)"><i class="ti ti-plus" style="font-size:13px;display:block;margin-bottom:2px"></i>Transaction</button>
+        <button id="dm-tab-add-sg"   onclick="setDayTab('add-sg')" style="flex:1;padding:7px 4px;font-size:12px;font-weight:500;border:none;border-radius:9px;cursor:pointer;transition:all .18s;background:transparent;color:var(--text3)"><i class="ti ti-target" style="font-size:13px;display:block;margin-bottom:2px"></i>Goal</button>
+        <button id="dm-tab-add-rec"  onclick="setDayTab('add-rec')" style="flex:1;padding:7px 4px;font-size:12px;font-weight:500;border:none;border-radius:9px;cursor:pointer;transition:all .18s;background:transparent;color:var(--text3)"><i class="ti ti-repeat" style="font-size:13px;display:block;margin-bottom:2px"></i>Recurring</button>
+      </div>
+    </div>
+    <!-- scrollable body -->
+    <div id="dm-body" style="padding:0 20px 20px;overflow-y:auto;flex:1"></div>
+  </div>
+</div>
 </body>
 </html>
