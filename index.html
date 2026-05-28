@@ -2480,25 +2480,20 @@ function showToast(msg,type='success'){
 // ── GOOGLE DRIVE SYNC ─────────────────────────────────────────────────────
 const GD_CONFIG_KEY = 'nic_gdrive_config';
 const GD_FILE_NAME  = 'finance_data.json';
-let gdToken     = null;  // OAuth access token
-let gdFileId    = null;  // Drive file ID once found/created
+const GD_CLIENT_ID  = '125819123231-u6tu7kuo75muir1hca4gv5lrp5c0tfp6.apps.googleusercontent.com';
+let gdToken     = null;
+let gdFileId    = null;
 let gdAutoSave  = false;
-let gdClientId  = '';
+let gdClientId  = GD_CLIENT_ID;
 let gdUserInfo  = null;
 
 function showGDPanel() {
   document.getElementById('gd-overlay').style.display = 'flex';
-  // restore saved config
   try {
     const c = JSON.parse(localStorage.getItem(GD_CONFIG_KEY) || '{}');
-    if (c.clientId) document.getElementById('gd-client-id').value = c.clientId;
     gdAutoSave = c.autoSave || false;
-    if (gdAutoSave) {
-      const cb = document.getElementById('gd-autosave');
-      if (cb) cb.checked = true;
-      const cb2 = document.getElementById('gd-autosave-on');
-      if (cb2) cb2.checked = true;
-    }
+    const cb2 = document.getElementById('gd-autosave-on');
+    if (cb2) cb2.checked = gdAutoSave;
     if (gdToken && gdUserInfo) { showGDSignedIn(); return; }
   } catch(e) {}
   setGDStatus('');
@@ -2520,29 +2515,23 @@ function setGDStatus(msg, type) {
 }
 
 async function gdSignIn() {
-  const clientId = document.getElementById('gd-client-id').value.trim();
-  if (!clientId) { setGDStatus('Please enter your OAuth Client ID first.', 'error'); return; }
-  gdClientId = clientId;
-  gdAutoSave = document.getElementById('gd-autosave').checked;
-  // load GIS library
+  gdAutoSave = document.getElementById('gd-autosave')?.checked || false;
   setGDStatus('Loading Google Sign-In…', 'loading');
   try {
     await loadScript('https://accounts.google.com/gsi/client');
     const client = google.accounts.oauth2.initTokenClient({
-      client_id: clientId,
+      client_id: GD_CLIENT_ID,
       scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
       callback: async (resp) => {
         if (resp.error) { setGDStatus('Sign-in failed: ' + resp.error, 'error'); return; }
         gdToken = resp.access_token;
         setGDStatus('Fetching profile…', 'loading');
         try {
-          // get user info
           const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
             headers: { Authorization: 'Bearer ' + gdToken }
           });
           gdUserInfo = await r.json();
-          // save config
-          localStorage.setItem(GD_CONFIG_KEY, JSON.stringify({ clientId, autoSave: gdAutoSave }));
+          localStorage.setItem(GD_CONFIG_KEY, JSON.stringify({ autoSave: gdAutoSave }));
           setGDStatus('Signed in as ' + gdUserInfo.email, 'success');
           showGDSignedIn();
           updateGDMenuLabel(true);
@@ -2713,28 +2702,19 @@ function loadScript(src) {
 
     <!-- not signed in -->
     <div id="gd-signin-panel">
-      <div style="background:var(--surface2);border-radius:var(--r);padding:14px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.75">
-        <strong style="color:var(--text)">One-time setup (5 min):</strong><br>
-        1. Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--blue)">console.cloud.google.com</a> → Create project<br>
-        2. <strong>APIs & Services</strong> → Enable <strong>Google Drive API</strong><br>
-        3. <strong>Credentials</strong> → Create <strong>OAuth 2.0 Client ID</strong> (Web app)<br>
-        4. Add authorised origin: <code style="background:var(--surface);padding:1px 5px;border-radius:4px;font-size:11px">https://nicapio.github.io</code><br>
-        5. Paste your Client ID below
-      </div>
-      <div style="margin-bottom:12px">
-        <label style="font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px">Google OAuth Client ID</label>
-        <input id="gd-client-id" class="fb-in" placeholder="xxxxxxxxxxxx-xxxxxxxx.apps.googleusercontent.com" style="font-size:12px">
-      </div>
-      <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px">
-        <input type="checkbox" id="gd-autosave" style="width:14px;height:14px">
-        <label for="gd-autosave" style="font-size:13px;color:var(--text2);cursor:pointer">Auto-save to Drive on every change</label>
-      </div>
-      <button class="btn" onclick="gdSignIn()" style="width:100%;justify-content:center;gap:10px;padding:10px">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.3 9 3.4l6.7-6.7C35.8 2.3 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6.1C12.4 13 17.7 9.5 24 9.5z"/><path fill="#FBBC04" d="M10.5 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.1.7-4.6l-7.8-6C.9 16.4 0 20.1 0 24c0 3.9.9 7.6 2.4 10.8l8.1-6.2z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7-5.4c-2.1 1.4-4.8 2.3-8.2 2.3-6.3 0-11.6-3.5-13.5-8.6l-8.1 6.2C6.6 42.7 14.6 48 24 48z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.4c-.5 2.8-2.1 5.2-4.4 6.8l7 5.4c4.1-3.8 6.5-9.4 6.5-16.2z"/></svg>
-        Sign in with Google
-      </button>
-      <div style="margin-top:10px;text-align:center">
-        <button onclick="closeGDPanel()" style="background:none;border:none;font-size:12px;color:var(--text3);cursor:pointer">Cancel</button>
+      <div style="text-align:center;padding:12px 0 20px">
+        <div style="font-size:40px;margin-bottom:12px">☁️</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px">Sync with Google Drive</div>
+        <div style="font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:20px">Your data saves as a file in your Google Drive.<br>Access it from any device.</div>
+        <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px">
+          <input type="checkbox" id="gd-autosave" style="width:14px;height:14px">
+          <label for="gd-autosave" style="font-size:13px;color:var(--text2);cursor:pointer">Auto-save on every change</label>
+        </div>
+        <button class="btn" onclick="gdSignIn()" style="width:100%;justify-content:center;gap:10px;padding:12px;font-size:14px">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.3 9 3.4l6.7-6.7C35.8 2.3 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6.1C12.4 13 17.7 9.5 24 9.5z"/><path fill="#FBBC04" d="M10.5 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.1.7-4.6l-7.8-6C.9 16.4 0 20.1 0 24c0 3.9.9 7.6 2.4 10.8l8.1-6.2z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7-5.4c-2.1 1.4-4.8 2.3-8.2 2.3-6.3 0-11.6-3.5-13.5-8.6l-8.1 6.2C6.6 42.7 14.6 48 24 48z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.4c-.5 2.8-2.1 5.2-4.4 6.8l7 5.4c4.1-3.8 6.5-9.4 6.5-16.2z"/></svg>
+          Sign in with Google
+        </button>
+        <button onclick="closeGDPanel()" style="margin-top:10px;background:none;border:none;font-size:12px;color:var(--text3);cursor:pointer">Cancel</button>
       </div>
     </div>
 
